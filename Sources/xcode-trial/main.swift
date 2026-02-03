@@ -85,9 +85,5 @@ if arguments.count > 1 {
   let videoPath = arguments[1]
   if FileManager.default.fileExists(atPath: videoPath) {
     runFullAnalysis(videoPath: videoPath, arguments: arguments)
-  } else {
-    print("❌ Error: File does not exist: \(videoPath)")
-    print("Usage: \(arguments[0]) <video_file_path>")
-    exit(1)
   }
 }
