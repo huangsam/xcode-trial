@@ -1,5 +1,4 @@
 import AVFoundation
-import CoreImage
 import Foundation
 
 /// Detects scene boundaries and transitions in video content.

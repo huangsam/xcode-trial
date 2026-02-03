@@ -1,5 +1,4 @@
 import AVFoundation
-import CoreImage
 import Foundation
 
 /// Analyzes motion and optical flow between consecutive video frames.

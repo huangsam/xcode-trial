@@ -1,5 +1,4 @@
 import AVFoundation
-import CoreImage
 import Foundation
 
 /// Errors that can occur during video reading operations.
