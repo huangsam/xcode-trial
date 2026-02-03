@@ -54,6 +54,62 @@ swift build --configuration release
 .build/release/xcode-trial /path/to/your/video.mp4
 ```
 
-## 🔮 Future Projects
+## 🎯 Example Output
 
-See [ROLES.md](ROLES.md) for detailed perspectives on potential enhancements from Data Engineer, Spark/Flink Engineer, AI/ML Engineer, and AI/LLM Engineer viewpoints.
+```json
+{
+  "metadata": {
+    "duration_seconds": 14.97,
+    "frame_rate_fps": 30.0,
+    "width_pixels": 1080,
+    "height_pixels": 1920,
+    "video_format": "MP4"
+  },
+  "faces": {
+    "total_faces_detected": 296,
+    "average_faces_per_frame": 1.13,
+    "frames_with_faces": 262
+  },
+  "scenes": {
+    "total_scene_changes": 11,
+    "average_scene_length_seconds": 1.25
+  },
+  "audio": {
+    "average_volume": 25.3,
+    "silence_percentage": 0.0,
+    "audio_segments_analyzed": 100
+  },
+  "text": {
+    "total_text_detections": 65,
+    "unique_text_elements": 21,
+    "average_text_confidence": 1.0
+  }
+}
+```
+
+### Analysis Pipeline
+
+```
+Input Video → Metadata Extraction → Parallel Analysis → Statistics Collection → JSON Export
+                    ↓                        ↓                        ↓
+            Face/Audio/Text Detection → Scene/Motion/Color Analysis → Report Generation
+```
+
+## 🎨 Use Cases
+
+Review [ROLES.md](ROLES.md) for more detailed use cases.
+
+### Content Analysis
+- **Educational Content**: Identify lecture styles (slides vs. demonstrations)
+- **Tutorial Classification**: Short-form vs. long-form content patterns
+- **Quality Assessment**: Detect corrupted or low-quality videos
+
+### ML Feature Extraction
+- **Video Similarity**: Content-based video recommendation
+- **Style Classification**: Tutorial, lecture, demo, entertainment
+- **Content Moderation**: Automated video categorization
+
+### Research & Analytics
+- **User Engagement**: Correlate video characteristics with viewer behavior
+- **Content Optimization**: A/B testing different video styles
+- **Trend Analysis**: Track content creation patterns over time
