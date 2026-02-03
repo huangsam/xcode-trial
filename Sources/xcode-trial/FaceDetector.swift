@@ -44,7 +44,7 @@ class FaceDetector {
 
   /// Detects faces in video frames using Vision framework.
   func analyzeFaces() -> [(timestamp: Double, count: Int, landmarks: VNFaceLandmarks2D?)] {
-    logger.debug("🎭 Performing detailed face analysis...")
+    logger.info("Performing detailed face analysis...")
 
     var results: [(timestamp: Double, count: Int, landmarks: VNFaceLandmarks2D?)] = []
 
@@ -92,7 +92,7 @@ class FaceDetector {
       logger.error("❌ Unexpected error during face detection: \(error.localizedDescription)")
     }
 
-    logger.debug("✅ Face analysis completed - detected faces in \(results.count) frames")
+    logger.debug("Face analysis completed - detected faces in \(results.count) frames")
     return results
   }
 
@@ -101,20 +101,10 @@ class FaceDetector {
   ) {
     if faceData.isEmpty { return }
 
-    let facePresentFrames = faceData.count
-    let totalFrames = 500  // Based on our demo limit
-    let facePresenceRate = Double(facePresentFrames) / Double(totalFrames) * 100
-
-    logger.debug("📊 Face presence: \(String(format: "%.1f", facePresenceRate))% of frames")
-
-    // Calculate average faces per frame when present
-    let avgFacesWhenPresent = Double(faceData.reduce(0) { $0 + $1.count }) / Double(faceData.count)
-    logger.debug("👨‍👩‍👧‍👦 Average faces when present: \(String(format: "%.1f", avgFacesWhenPresent))")
-
     // Detect face landmarks if available
     let framesWithLandmarks = faceData.filter { $0.landmarks != nil }.count
     if framesWithLandmarks > 0 {
-      logger.debug("🎯 Facial landmarks detected in \(framesWithLandmarks) frames")
+      logger.debug("Facial landmarks detected in \(framesWithLandmarks) frames")
     }
   }
 

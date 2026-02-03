@@ -51,7 +51,7 @@ class ColorAnalyzer {
   func analyzeColorPalette() -> [(
     timestamp: Double, dominantColors: [CIColor], palette: [String: Double]
   )] {
-    logger.debug("🎨 Performing comprehensive color analysis...")
+    logger.info("Performing comprehensive color analysis...")
 
     guard let videoTrack = videoAnalyzer.videoTrack else { return [] }
 
@@ -95,7 +95,7 @@ class ColorAnalyzer {
 
     reader?.cancelReading()
 
-    logger.debug("✅ Analyzed colors in \(colorAnalyses.count) frames")
+    logger.debug("Analyzed colors in \(colorAnalyses.count) frames")
 
     // Analyze color consistency and changes
     analyzeColorConsistency(colorAnalyses)
@@ -307,9 +307,8 @@ class ColorAnalyzer {
     let paletteStability =
       Double(colorAnalyses.count - paletteChanges) / Double(colorAnalyses.count) * 100
 
-    logger.debug("🎨 Color analysis results:")
-    logger.debug("  Palette stability: \(String(format: "%.1f", paletteStability))%")
-    logger.debug("  Color changes detected: \(paletteChanges)")
+    logger.debug("Palette stability: \(String(format: "%.1f", paletteStability))%")
+    logger.debug("Color changes detected: \(paletteChanges)")
 
     // Analyze dominant color trends
     let allDominantColors = colorAnalyses.flatMap { $0.dominantColors }
@@ -317,7 +316,7 @@ class ColorAnalyzer {
       let colorBrightnesses = allDominantColors.map { ($0.red + $0.green + $0.blue) / 3 }
       let totalBrightness = colorBrightnesses.reduce(0, +)
       let avgBrightness = totalBrightness / Double(allDominantColors.count)
-      logger.debug("  Average brightness: \(String(format: "%.2f", avgBrightness))")
+      logger.debug("Average brightness: \(String(format: "%.2f", avgBrightness))")
     }
   }
 

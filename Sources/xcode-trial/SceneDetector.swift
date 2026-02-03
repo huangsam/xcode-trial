@@ -51,7 +51,7 @@ class SceneDetector {
 
   /// Detects scene boundaries and classifies transition types.
   func detectSceneBoundaries() -> [(timestamp: Double, type: String, confidence: Double)] {
-    logger.debug("🎬 Performing advanced scene detection...")
+    logger.info("Performing advanced scene detection...")
 
     var sceneBoundaries: [(timestamp: Double, type: String, confidence: Double)] = []
     var previousFrameData: [UInt8]?
@@ -109,15 +109,13 @@ class SceneDetector {
       logger.error("❌ Unexpected error during scene detection: \(error.localizedDescription)")
     }
 
-    logger.debug("✅ Scene detection completed - found \(sceneBoundaries.count) scene boundaries")
+    logger.debug("Scene detection completed - found \(sceneBoundaries.count) scene boundaries")
 
     let cutCount = sceneBoundaries.filter { $0.type == "hard_cut" }.count
     let fadeCount = sceneBoundaries.filter { $0.type == "fade" }.count
     let dissolveCount = sceneBoundaries.filter { $0.type == "dissolve" }.count
 
     logger.debug("Hard cuts: \(cutCount), Fades: \(fadeCount), Dissolves: \(dissolveCount)")
-
-    analyzeSceneLengths(sceneBoundaries)
 
     return sceneBoundaries
   }
@@ -203,31 +201,5 @@ class SceneDetector {
     }
 
     return pixelCount > 0 ? totalBrightness / Double(pixelCount) / 255.0 : 0.0
-  }
-
-  private func analyzeSceneLengths(
-    _ boundaries: [(timestamp: Double, type: String, confidence: Double)]
-  ) {
-    if boundaries.isEmpty { return }
-
-    var sceneLengths: [Double] = []
-    var previousTimestamp = 0.0
-
-    for boundary in boundaries {
-      sceneLengths.append(boundary.timestamp - previousTimestamp)
-      previousTimestamp = boundary.timestamp
-    }
-
-    // Add final scene length
-    sceneLengths.append(videoAnalyzer.duration - previousTimestamp)
-
-    let avgSceneLength = sceneLengths.reduce(0, +) / Double(sceneLengths.count)
-    let minSceneLength = sceneLengths.min() ?? 0
-    let maxSceneLength = sceneLengths.max() ?? 0
-
-    logger.debug("📊 Scene length statistics:")
-    logger.debug("  Average: \(String(format: "%.1f", avgSceneLength))s")
-    logger.debug("  Shortest: \(String(format: "%.1f", minSceneLength))s")
-    logger.debug("  Longest: \(String(format: "%.1f", maxSceneLength))s")
   }
 }

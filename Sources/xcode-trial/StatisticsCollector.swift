@@ -83,34 +83,6 @@ class StatisticsCollector {
     return result
   }
 
-  /// Generates a human-readable report of all statistics.
-  func generateReport() -> String {
-    var report = "📊 Video Analysis Report\n"
-    report += "========================\n\n"
-
-    let categories = [
-      "metadata", "faces", "scenes", "colors", "motion", "brightness", "text", "audio", "keyframes",
-    ]
-
-    for category in categories {
-      if let categoryStats = getCategoryStatistics(category: category) {
-        report += "📋 \(category.capitalized) Analysis:\n"
-
-        for (key, value) in categoryStats.sorted(by: { $0.key < $1.key }) {
-          let formattedKey = key.replacingOccurrences(of: "_", with: " ").capitalized
-          report += "  • \(formattedKey): \(formatValue(value))\n"
-        }
-        report += "\n"
-      }
-    }
-
-    // Add summary insights
-    report += "💡 Key Insights:\n"
-    report += generateInsights()
-
-    return report
-  }
-
   private func formatValue(_ value: Any) -> String {
     switch value {
     case let intValue as Int:
@@ -218,7 +190,7 @@ class StatisticsCollector {
   func exportToJSON(filePath: String) throws {
     let jsonData = try JSONSerialization.data(withJSONObject: statistics, options: .prettyPrinted)
     try jsonData.write(to: URL(fileURLWithPath: filePath))
-    print("📄 Analysis results exported to: \(filePath)")
+    logger.info("Analysis results exported to: \(filePath)")
   }
 
   /// Exports all statistics to a CSV file.
@@ -235,6 +207,6 @@ class StatisticsCollector {
     }
 
     try csvContent.write(toFile: filePath, atomically: true, encoding: .utf8)
-    print("📊 Analysis results exported to CSV: \(filePath)")
+    logger.info("Analysis results exported to CSV: \(filePath)")
   }
 }

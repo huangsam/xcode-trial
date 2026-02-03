@@ -31,8 +31,6 @@ import Vision
 /// let analyzer = VideoAnalyzer(videoPath: "/path/to/video.mp4")
 /// analyzer.analyzeBasicInfo()
 /// analyzer.analyzeFaces()
-/// // ... run other analyses
-/// analyzer.printStatistics()
 /// ```
 class VideoAnalyzer {
   let videoPath: String
@@ -110,7 +108,6 @@ class VideoAnalyzer {
 
   /// Extracts basic video metadata and displays information.
   func analyzeBasicInfo() {
-    logger.debug("📊 Basic Video Information:")
     logger.debug("Duration: \(String(format: "%.2f", duration)) seconds")
     logger.debug("Frame rate: \(frameRate) fps")
     logger.debug("Dimensions: \(Int(dimensions.width)) x \(Int(dimensions.height))")
@@ -130,7 +127,7 @@ class VideoAnalyzer {
 
   /// Analyzes scene changes and background transitions.
   func analyzeBackgroundChanges() {
-    logger.debug("🔄 Analyzing background changes...")
+    logger.debug("Analyzing background changes...")
 
     guard let videoTrack = videoTrack else { return }
 
@@ -172,10 +169,7 @@ class VideoAnalyzer {
 
     reader?.cancelReading()
 
-    logger.debug("✅ Found \(backgroundChanges.count) background changes")
-    logger.debug(
-      "  Change rate: \(String(format: "%.2f", Double(backgroundChanges.count) / Double(frameCount) * 100))%"
-    )
+    logger.debug("Found \(backgroundChanges.count) background changes")
   }
 
   /// Detects and analyzes faces in video frames.
@@ -245,7 +239,7 @@ class VideoAnalyzer {
 
   /// Measures brightness levels throughout the video.
   func analyzeBrightness() {
-    logger.debug("💡 Analyzing brightness levels...")
+    logger.debug("Analyzing brightness levels...")
 
     guard let videoTrack = videoTrack else { return }
 
@@ -278,7 +272,7 @@ class VideoAnalyzer {
 
     let avgBrightness =
       brightnessLevels.map { $0.brightness }.reduce(0, +) / Double(brightnessLevels.count)
-    logger.debug("✅ Average brightness: \(String(format: "%.2f", avgBrightness))")
+    logger.debug("Average brightness: \(String(format: "%.2f", avgBrightness))")
 
     // Collect statistics
     statisticsCollector.addStatistic(
@@ -338,7 +332,7 @@ class VideoAnalyzer {
 
   /// Generates representative key frames from the video.
   func generateKeyFrames() {
-    logger.debug("📸 Generating key frames...")
+    logger.debug("Generating key frames...")
 
     // Extract key frames at regular intervals
     let keyFrameInterval = duration / 10.0  // 10 key frames total
@@ -350,19 +344,13 @@ class VideoAnalyzer {
       keyFrames.append((timestamp: timestamp, image: frame))
     }
 
-    logger.debug("✅ Generated \(keyFrames.count) key frames")
+    logger.debug("Generated \(keyFrames.count) key frames")
 
     // Collect statistics
     statisticsCollector.addStatistic(
       category: "keyframes", key: "total_keyframes", value: keyFrames.count)
     statisticsCollector.addStatistic(
       category: "keyframes", key: "keyframe_interval_seconds", value: keyFrameInterval)
-  }
-
-  /// Displays analysis results and statistics.
-  func printStatistics() {
-    let report = statisticsCollector.generateReport()
-    print(report)
   }
 
   // Helper methods

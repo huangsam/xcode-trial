@@ -55,7 +55,7 @@ class TextDetector {
 
   /// Performs optical character recognition on video frames.
   func detectText() -> [(timestamp: Double, text: String, confidence: Float, boundingBox: CGRect)] {
-    logger.debug("📝 Performing text detection and OCR...")
+    logger.info("Performing text detection and OCR...")
 
     guard let videoTrack = videoAnalyzer.videoTrack else { return [] }
 
@@ -124,7 +124,7 @@ class TextDetector {
 
     reader?.cancelReading()
 
-    logger.debug("✅ Detected text in \(textDetections.count) frames")
+    logger.debug("Detected text in \(textDetections.count) frames")
 
     // Analyze detected text
     analyzeDetectedText(textDetections)
@@ -147,19 +147,7 @@ class TextDetector {
         (timestamp: detection.timestamp, confidence: detection.confidence))
     }
 
-    logger.debug("📝 Text analysis results:")
-    logger.debug("  Unique text elements: \(textGroups.count)")
-
-    // Find most common text (likely titles, captions, etc.)
-    let sortedGroups = textGroups.sorted { $0.value.count > $1.value.count }
-
-    if let mostCommon = sortedGroups.first {
-      let avgConfidence =
-        mostCommon.value.map { $0.confidence }.reduce(0, +) / Float(mostCommon.value.count)
-      logger.debug(
-        "    Most frequent text: \"\(mostCommon.key)\" (\(mostCommon.value.count) occurrences, \(String(format: "%.1f", avgConfidence * 100))% confidence)"
-      )
-    }
+    logger.debug("Unique text elements: \(textGroups.count)")
 
     // Analyze text timing patterns
     let timestamps = textDetections.map { $0.timestamp }.sorted()
@@ -170,20 +158,13 @@ class TextDetector {
       }
 
       let avgInterval = intervals.reduce(0, +) / Double(intervals.count)
-      logger.debug("  Average text display time: \(String(format: "%.1f", avgInterval))s")
-    }
-
-    // Categorize text types
-    let textTypes = categorizeText(textDetections)
-    for (type, count) in textTypes.sorted(by: { $0.value > $1.value }) {
-      let percentage = Double(count) / Double(textDetections.count) * 100
-      logger.debug("  \(type): \(String(format: "%.1f", percentage))%")
+      logger.debug("Average text display time: \(String(format: "%.1f", avgInterval))s")
     }
 
     // Check for captions/subtitles (bottom of screen)
     let bottomText = textDetections.filter { $0.boundingBox.minY < 0.3 }
     if !bottomText.isEmpty {
-      logger.debug("  📺 Potential captions/subtitles: \(bottomText.count) detections")
+      logger.debug("Potential captions/subtitles: \(bottomText.count) detections")
     }
   }
 

@@ -50,7 +50,6 @@ func runFullAnalysis(videoPath: String, arguments: [String]) {
   setupLogging()
   logger.info("Starting comprehensive video analysis...")
   logger.info("Video: \(videoPath)")
-  print()
 
   let analyzer = VideoAnalyzer(videoPath: videoPath)
 
@@ -65,18 +64,17 @@ func runFullAnalysis(videoPath: String, arguments: [String]) {
   analyzer.analyzeText()
   analyzer.analyzeAudio()
   analyzer.generateKeyFrames()
-  analyzer.printStatistics()
 
   // Export results
   let exportPath = (arguments[1] as NSString).deletingPathExtension + "_analysis.json"
   do {
     try analyzer.stats.exportToJSON(filePath: exportPath)
   } catch {
-    print("⚠️  Warning: Could not export JSON results: \(error.localizedDescription)")
+    logger.warning("⚠️  Warning: Could not export JSON results: \(error.localizedDescription)")
   }
 
-  print("\n✅ Analysis complete!")
-  print("📄 Results exported to: \(exportPath)")
+  logger.info("Analysis complete!")
+  logger.info("Results exported to: \(exportPath)")
 }
 
 let arguments = CommandLine.arguments

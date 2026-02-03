@@ -37,19 +37,19 @@ class AudioAnalyzer {
 
   /// Analyzes audio volume levels and detects silent periods.
   func analyzeAudio() -> [(timestamp: Double, volume: Double, isSilent: Bool)] {
-    logger.debug("🔊 Performing audio analysis...")
+    logger.info("Performing audio analysis...")
 
     // Get audio tracks
     let audioTracks = videoAnalyzer.asset.tracks(withMediaType: .audio)
     guard !audioTracks.isEmpty else {
-      logger.debug("⚠️  No audio tracks found")
+      logger.debug("No audio tracks found")
       return []
     }
 
     let audioTrack = audioTracks[0]
-    logger.debug("📊 Audio format: \(audioTrack.mediaType.rawValue)")
-    logger.debug("🎵 Sample rate: \(audioTrack.naturalTimeScale) Hz")
-    logger.debug("📏 Channels: \(audioTrack.naturalSize.width)")
+    logger.debug("Audio format: \(audioTrack.mediaType.rawValue)")
+    logger.debug("Sample rate: \(audioTrack.naturalTimeScale) Hz")
+    logger.debug("Channels: \(audioTrack.naturalSize.width)")
 
     // Create audio reader
     let reader = try? AVAssetReader(asset: videoAnalyzer.asset)
@@ -65,7 +65,7 @@ class AudioAnalyzer {
     reader?.add(trackOutput)
 
     guard reader?.startReading() == true else {
-      logger.debug("❌ Could not start audio reading")
+      logger.debug("Could not start audio reading")
       return []
     }
 
@@ -129,7 +129,7 @@ class AudioAnalyzer {
 
     reader?.cancelReading()
 
-    logger.debug("✅ Analyzed audio in \(audioData.count) segments")
+    logger.debug("Analyzed audio in \(audioData.count) segments")
 
     // Analyze audio patterns
     analyzeAudioPatterns(audioData)
@@ -147,10 +147,9 @@ class AudioAnalyzer {
     let silentSegments = audioData.filter { $0.isSilent }.count
     let silencePercentage = Double(silentSegments) / Double(audioData.count) * 100
 
-    logger.debug("🎚️  Audio analysis results:")
-    logger.debug("  Average volume: \(String(format: "%.1f", avgVolume))%")
+    logger.debug("Average volume: \(String(format: "%.1f", avgVolume))%")
     logger.debug(
-      "  Silent segments: \(silentSegments) (\(String(format: "%.1f", silencePercentage))%)")
+      "Silent segments: \(silentSegments) (\(String(format: "%.1f", silencePercentage))%)")
 
     // Detect significant volume changes (potential scene changes or speaker transitions)
     var volumeChanges = 0
