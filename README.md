@@ -2,18 +2,9 @@
 
 A comprehensive Swift-based video analysis tool that performs multimodal analysis on video files, extracting insights about faces, scenes, colors, motion, audio, text, and more. Perfect for content analysis, video classification, and ML feature extraction.
 
-## 🎯 Overview
+See [AGENTS.md](AGENTS.md) for information about AI agent integration and development workflows.
 
-This tool analyzes MP4 video files and generates detailed JSON reports containing:
-
-- **Face Detection**: Face counting, landmark analysis, and presence tracking
-- **Scene Analysis**: Scene boundary detection, transition analysis, and pacing metrics
-- **Color Analysis**: Dominant color palette extraction and color consistency tracking
-- **Motion Analysis**: Optical flow calculation and motion intensity measurement
-- **Audio Analysis**: Volume level tracking, silence detection, and speaking pattern estimation
-- **Text Detection**: OCR text extraction with confidence scoring
-- **Brightness Analysis**: Lighting consistency and exposure tracking
-- **Keyframe Extraction**: Representative frame selection for video thumbnails
+See [ROLES.md](ROLES.md) for engineering perspectives and data flow architecture.
 
 ## 🚀 Key Features
 
@@ -23,7 +14,7 @@ This tool analyzes MP4 video files and generates detailed JSON reports containin
 - **Modular Architecture**: Easily extensible with new analysis components
 - **Production Ready**: Built with Swift Package Manager, supports both debug and release builds
 
-## 📋 Requirements
+## ⌨️ Requirements
 
 - **macOS 12.0+**
 - **Xcode 13.0+** or Swift 5.5+
@@ -86,30 +77,3 @@ swift build --configuration release
   }
 }
 ```
-
-### Analysis Pipeline
-
-```
-Input Video → Metadata Extraction → Parallel Analysis → Statistics Collection → JSON Export
-                    ↓                        ↓                        ↓
-            Face/Audio/Text Detection → Scene/Motion/Color Analysis → Report Generation
-```
-
-## 🎨 Use Cases
-
-Review [ROLES.md](ROLES.md) for more detailed use cases.
-
-### Content Analysis
-- **Educational Content**: Identify lecture styles (slides vs. demonstrations)
-- **Tutorial Classification**: Short-form vs. long-form content patterns
-- **Quality Assessment**: Detect corrupted or low-quality videos
-
-### ML Feature Extraction
-- **Video Similarity**: Content-based video recommendation
-- **Style Classification**: Tutorial, lecture, demo, entertainment
-- **Content Moderation**: Automated video categorization
-
-### Research & Analytics
-- **User Engagement**: Correlate video characteristics with viewer behavior
-- **Content Optimization**: A/B testing different video styles
-- **Trend Analysis**: Track content creation patterns over time
