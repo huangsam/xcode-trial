@@ -40,6 +40,7 @@ class FaceDetector {
     self.videoAnalyzer = videoAnalyzer
   }
 
+  /// Detects faces in video frames using Vision framework.
   func analyzeFaces() -> [(timestamp: Double, count: Int, landmarks: VNFaceLandmarks2D?)] {
     print("🎭 Performing detailed face analysis...")
 
@@ -125,6 +126,7 @@ class FaceDetector {
     }
   }
 
+  /// Detects potential speaker changes based on face count variations.
   func detectSpeakerChanges(
     _ faceData: [(timestamp: Double, count: Int, landmarks: VNFaceLandmarks2D?)]
   ) -> [Double] {

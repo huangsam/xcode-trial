@@ -47,6 +47,7 @@ class ColorAnalyzer {
     self.videoAnalyzer = videoAnalyzer
   }
 
+  /// Extracts dominant colors from video frames using sampling techniques.
   func analyzeColorPalette() -> [(
     timestamp: Double, dominantColors: [CIColor], palette: [String: Double]
   )] {

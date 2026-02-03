@@ -35,6 +35,7 @@ class AudioAnalyzer {
     self.videoAnalyzer = videoAnalyzer
   }
 
+  /// Analyzes audio volume levels and detects silent periods.
   func analyzeAudio() -> [(timestamp: Double, volume: Double, isSilent: Bool)] {
     print("🔊 Performing audio analysis...")
 

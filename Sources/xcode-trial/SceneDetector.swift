@@ -47,6 +47,7 @@ class SceneDetector {
     self.videoAnalyzer = videoAnalyzer
   }
 
+  /// Detects scene boundaries and classifies transition types.
   func detectSceneBoundaries() -> [(timestamp: Double, type: String, confidence: Double)] {
     print("🎬 Performing advanced scene detection...")
 

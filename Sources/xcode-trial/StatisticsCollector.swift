@@ -49,6 +49,7 @@ import Foundation
 class StatisticsCollector {
   private var statistics: [String: Any] = [:]
 
+  /// Adds a statistic value to the specified category and key.
   func addStatistic(category: String, key: String, value: Any) {
     if statistics[category] == nil {
       statistics[category] = [String: Any]()
@@ -60,15 +61,18 @@ class StatisticsCollector {
     }
   }
 
+  /// Retrieves a specific statistic value.
   func getStatistic(category: String, key: String) -> Any? {
     guard let categoryDict = statistics[category] as? [String: Any] else { return nil }
     return categoryDict[key]
   }
 
+  /// Retrieves all statistics for a specific category.
   func getCategoryStatistics(category: String) -> [String: Any]? {
     return statistics[category] as? [String: Any]
   }
 
+  /// Retrieves all statistics organized by category.
   func getAllStatistics() -> [String: [String: Any]] {
     var result = [String: [String: Any]]()
     for (category, data) in statistics {
@@ -79,6 +83,7 @@ class StatisticsCollector {
     return result
   }
 
+  /// Generates a human-readable report of all statistics.
   func generateReport() -> String {
     var report = "📊 Video Analysis Report\n"
     report += "========================\n\n"
@@ -209,12 +214,14 @@ class StatisticsCollector {
     return insights
   }
 
+  /// Exports all statistics to a JSON file.
   func exportToJSON(filePath: String) throws {
     let jsonData = try JSONSerialization.data(withJSONObject: statistics, options: .prettyPrinted)
     try jsonData.write(to: URL(fileURLWithPath: filePath))
     print("📄 Analysis results exported to: \(filePath)")
   }
 
+  /// Exports all statistics to a CSV file.
   func exportToCSV(filePath: String) throws {
     var csvContent = "Category,Key,Value\n"
 

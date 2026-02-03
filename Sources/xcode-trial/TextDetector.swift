@@ -53,6 +53,7 @@ class TextDetector {
     self.videoAnalyzer = videoAnalyzer
   }
 
+  /// Performs optical character recognition on video frames.
   func detectText() -> [(timestamp: Double, text: String, confidence: Float, boundingBox: CGRect)] {
     print("📝 Performing text detection and OCR...")
 
@@ -219,6 +220,7 @@ class TextDetector {
 
 // String extension for regex matching
 extension String {
+  /// Tests if the string matches a regular expression pattern.
   func matches(pattern: String) -> Bool {
     do {
       let regex = try NSRegularExpression(pattern: pattern, options: [])

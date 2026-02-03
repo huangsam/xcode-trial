@@ -108,6 +108,7 @@ class VideoAnalyzer {
     totalFrames = Int(duration * Double(frameRate))
   }
 
+  /// Extracts basic video metadata and displays information.
   func analyzeBasicInfo() {
     print("📊 Basic Video Information:")
     print("  Duration: \(String(format: "%.2f", duration)) seconds")
@@ -128,6 +129,7 @@ class VideoAnalyzer {
     statisticsCollector.addStatistic(category: "metadata", key: "video_format", value: "MP4")
   }
 
+  /// Analyzes scene changes and background transitions.
   func analyzeBackgroundChanges() {
     print("🔄 Analyzing background changes...")
 
@@ -178,6 +180,7 @@ class VideoAnalyzer {
     print()
   }
 
+  /// Detects and analyzes faces in video frames.
   func analyzeFaces() {
     facesDetected = faceDetector.analyzeFaces()
 
@@ -192,6 +195,7 @@ class VideoAnalyzer {
       value: facesDetected.isEmpty ? 0 : Double(totalFaces) / Double(facesDetected.count))
   }
 
+  /// Identifies scene boundaries and transitions.
   func analyzeScenes() {
     let sceneResults = sceneDetector.detectSceneBoundaries()
     sceneBoundaries = sceneResults.map { (timestamp: $0.timestamp, type: $0.type) }
@@ -206,6 +210,7 @@ class VideoAnalyzer {
     }
   }
 
+  /// Extracts dominant colors from video frames.
   func analyzeColors() {
     let colorResults = colorAnalyzer.analyzeColorPalette()
     dominantColors = colorResults.map { (timestamp: $0.timestamp, colors: $0.dominantColors) }
@@ -221,6 +226,7 @@ class VideoAnalyzer {
     }
   }
 
+  /// Analyzes motion and optical flow between frames.
   func analyzeMotion() {
     let motionResults = motionAnalyzer.analyzeMotion()
     motionIntensities = motionResults.map { (timestamp: $0.timestamp, intensity: $0.intensity) }
@@ -239,6 +245,7 @@ class VideoAnalyzer {
     }
   }
 
+  /// Measures brightness levels throughout the video.
   func analyzeBrightness() {
     print("💡 Analyzing brightness levels...")
 
@@ -291,6 +298,7 @@ class VideoAnalyzer {
     }
   }
 
+  /// Performs optical character recognition on video frames.
   func analyzeText() {
     let textResults = textDetector.detectText()
     detectedText = textResults.map {
@@ -311,6 +319,7 @@ class VideoAnalyzer {
     }
   }
 
+  /// Analyzes audio volume and silence detection.
   func analyzeAudio() {
     let audioResults = audioAnalyzer.analyzeAudio()
     audioLevels = audioResults
@@ -330,6 +339,7 @@ class VideoAnalyzer {
     }
   }
 
+  /// Generates representative key frames from the video.
   func generateKeyFrames() {
     print("📸 Generating key frames...")
 
@@ -353,12 +363,15 @@ class VideoAnalyzer {
       category: "keyframes", key: "keyframe_interval_seconds", value: keyFrameInterval)
   }
 
+  /// Displays analysis results and statistics.
   func printStatistics() {
     let report = statisticsCollector.generateReport()
     print(report)
   }
 
   // Helper methods
+
+  /// Extracts grayscale pixel data from a video frame for analysis.
   func extractFrameData(from pixelBuffer: CVPixelBuffer) -> [UInt8] {
     CVPixelBufferLockBaseAddress(pixelBuffer, .readOnly)
     defer { CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly) }
@@ -387,6 +400,7 @@ class VideoAnalyzer {
     return samples
   }
 
+  /// Calculates the difference between two video frames as a normalized value.
   func calculateFrameDifference(_ frame1: [UInt8], _ frame2: [UInt8]) -> Double {
     var totalDiff = 0
     let count = min(frame1.count, frame2.count)

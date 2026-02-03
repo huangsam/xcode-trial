@@ -44,6 +44,7 @@ class MotionAnalyzer {
     self.videoAnalyzer = videoAnalyzer
   }
 
+  /// Analyzes motion between consecutive video frames using optical flow.
   func analyzeMotion() -> [(
     timestamp: Double, intensity: Double, direction: (x: Double, y: Double)?, type: String
   )] {

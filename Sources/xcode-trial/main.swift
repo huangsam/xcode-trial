@@ -7,48 +7,9 @@ import CoreML
 import Foundation
 import Vision
 
-/// Entry point for the Video Analysis Tool command-line application.
-///
-/// This tool performs comprehensive multimodal analysis of video files, extracting
-/// structured data about faces, scenes, colors, motion, audio, text, and brightness.
-/// Results are exported as JSON for use in ML pipelines and data analysis workflows.
-///
-/// Command-line usage:
-/// ```bash
-/// # Full analysis with JSON export
-/// swift run xcode-trial /path/to/video.mp4
-///
-/// # Demonstrate capabilities (no video required)
-/// swift run xcode-trial --demo
-/// ```
-///
-/// Analysis pipeline:
-/// 1. Video asset validation and metadata loading
-/// 2. Sequential execution of all analysis modules
-/// 3. Result aggregation and statistics collection
-/// 4. JSON export with error handling
-/// 5. Human-readable summary display
-///
-/// Supported video formats:
-/// - MP4, MOV, M4V (AVFoundation supported formats)
-/// - H.264, H.265, ProRes codecs
-/// - Variable frame rates and resolutions
-///
-/// Output format:
-/// - Console: Progress indicators and summary statistics
-/// - File: Structured JSON with categorized analysis results
-/// - Naming: {video_name}_analysis.json
-///
-/// Error handling:
-/// - Graceful degradation for missing audio/video tracks
-/// - Warning messages for export failures
-/// - Early termination for invalid input files
-///
-/// Performance characteristics:
-/// - Processing time scales with video duration
-/// - Memory usage proportional to video resolution
-/// - CPU intensive due to computer vision operations
-/// - Optimized for batch processing workflows
+/// Command-line entry point for the Video Analysis Tool.
+/// Performs multimodal video analysis and exports structured JSON results.
+/// Usage: swift run xcode-trial <video.mp4>
 
 /// Performs comprehensive multimodal video analysis and exports results to JSON.
 ///
@@ -104,87 +65,24 @@ func runFullAnalysis(videoPath: String, arguments: [String]) {
   print("📄 Results exported to: \(exportPath)")
 }
 
-/// Displays comprehensive information about the video analysis tool's capabilities.
-///
-/// This function provides a detailed overview of all analysis features and capabilities
-/// without requiring a video file. It's useful for understanding the tool's scope,
-/// demonstrating features to stakeholders, and serving as documentation.
-///
-/// Display categories:
-/// - Basic video metadata analysis
-/// - Facial detection and analysis capabilities
-/// - Scene detection and segmentation
-/// - Color analysis and palette extraction
-/// - Motion and optical flow analysis
-/// - Audio analysis and processing
-/// - Text recognition and OCR
-/// - Brightness and lighting analysis
-///
-/// Usage context:
-/// - Command-line help when no video is provided
-/// - Feature demonstration and documentation
-/// - Capability assessment for integration planning
-/// - Educational purposes for understanding analysis scope
+/// Displays information about the video analysis tool's capabilities.
+/// Shows available analysis features without requiring a video file.
 func demonstrateCapabilities() {
-  print("🎯 Advanced Video Analysis Capabilities:")
-  print("=======================================")
+  print("🎯 Video Analysis Tool Capabilities:")
+  print("===================================")
   print()
-  print("📊 Basic Analysis:")
-  print("  • Video metadata (duration, resolution, frame rate)")
-  print("  • Codec information and format details")
+  print("📊 Basic: Video metadata, duration, resolution, codecs")
+  print("🎭 Faces: Detection, landmarks, tracking, speaker ID")
+  print("🎬 Scenes: Boundary detection, cuts/fades, segmentation")
+  print("🎨 Colors: Dominant palettes, histograms, grading changes")
+  print("📸 Frames: Key frame extraction, thumbnails, storyboards")
+  print("⚡ Motion: Optical flow, intensity, camera movement")
+  print("💡 Brightness: Lighting changes, exposure tracking")
+  print("📝 Text: OCR, captions, on-screen text extraction")
+  print("🔈 Audio: Volume tracking, silence detection, patterns")
+  print("📈 Output: JSON export, comprehensive statistics")
   print()
-  print("🎭 Face Detection:")
-  print("  • Face counting and tracking across frames")
-  print("  • Face landmarks and expressions")
-  print("  • Speaker identification and screen time")
-  print()
-  print("🎬 Scene Detection:")
-  print("  • Scene boundary detection (cuts, fades, dissolves)")
-  print("  • Content-aware scene segmentation")
-  print("  • Shot length analysis")
-  print()
-  print("🎨 Color Analysis:")
-  print("  • Dominant color palette extraction")
-  print("  • Color histogram analysis")
-  print("  • Color grading change detection")
-  print()
-  print("📸 Key Frame Extraction:")
-  print("  • Representative frame capture")
-  print("  • Thumbnail generation")
-  print("  • Storyboard creation")
-  print()
-  print("⚡ Motion Analysis:")
-  print("  • Optical flow calculation")
-  print("  • Motion intensity measurement")
-  print("  • Camera movement detection")
-  print()
-  print("💡 Brightness Analysis:")
-  print("  • Lighting change detection")
-  print("  • Histogram analysis")
-  print("  • Exposure consistency tracking")
-  print()
-  print("📝 Text Detection:")
-  print("  • On-screen text extraction (OCR)")
-  print("  • Caption and subtitle detection")
-  print("  • Text content analysis")
-  print()
-  print("🔈 Audio Analysis:")
-  print("  • Volume level tracking over time")
-  print("  • Silence detection and analysis")
-  print("  • Audio format information")
-  print("  • Speaking pattern estimation")
-  print()
-  print("📈 Statistics & Reporting:")
-  print("  • Comprehensive analysis summary")
-  print("  • Visual content metrics")
-  print("  • Temporal analysis results")
-  print()
-  print("🔧 Technical Features:")
-  print("  • AVFoundation for video processing")
-  print("  • Vision framework for computer vision")
-  print("  • Core Image for image analysis")
-  print("  • Core ML for advanced detection")
-  print("  • Multi-threaded processing")
+  print("🔧 Built with: AVFoundation, Vision, Core Image, Core ML")
 }
 
 let arguments = CommandLine.arguments
