@@ -66,11 +66,14 @@ class FaceDetector {
       let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
       let timestamp = CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
 
-      // Face detection with landmarks
+      // Face detection with landmarks using Vision framework
+      // VNDetectFaceLandmarksRequest automatically detects faces and extracts facial features
       let faceDetectionRequest = VNDetectFaceLandmarksRequest { request, error in
+        // Vision requests are asynchronous - this completion handler runs on background thread
         guard let observations = request.results as? [VNFaceObservation] else { return }
 
         if !observations.isEmpty {
+          // Store first face's landmarks (could be extended to handle multiple faces)
           results.append(
             (
               timestamp: timestamp,

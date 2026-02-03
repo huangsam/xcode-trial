@@ -80,14 +80,17 @@ class TextDetector {
       let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
       let timestamp = CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
 
-      // Text recognition request
+      // Text recognition using Vision framework OCR
+      // VNRecognizeTextRequest automatically detects and extracts text from images
       let textRecognitionRequest = VNRecognizeTextRequest { request, error in
+        // Process OCR results - Vision returns VNRecognizedTextObservation objects
         guard let observations = request.results as? [VNRecognizedTextObservation] else { return }
 
         for observation in observations {
+          // Get the top recognition candidate (highest confidence)
           guard let topCandidate = observation.topCandidates(1).first else { continue }
 
-          // Filter out low confidence results
+          // Filter out low confidence results to improve accuracy
           if topCandidate.confidence > 0.6 {
             textDetections.append(
               (
@@ -100,16 +103,18 @@ class TextDetector {
         }
       }
 
-      // Configure for better accuracy
+      // Configure for better accuracy (slower but more precise)
       textRecognitionRequest.recognitionLevel = .accurate
       textRecognitionRequest.usesLanguageCorrection = true
+      // Use latest OCR model if available (macOS 13+)
       if #available(macOS 13.0, *) {
         textRecognitionRequest.revision = VNRecognizeTextRequestRevision3
       }
 
-      // Support multiple languages
+      // Support multiple English variants for better recognition
       textRecognitionRequest.recognitionLanguages = ["en-US", "en-GB"]
 
+      // Execute the Vision request on the frame
       let handler = VNImageRequestHandler(ciImage: ciImage, options: [:])
       try? handler.perform([textRecognitionRequest])
 

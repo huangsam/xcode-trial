@@ -81,14 +81,14 @@ class MotionAnalyzer {
           previous, frameData, width: CVPixelBufferGetWidth(pixelBuffer),
           height: CVPixelBufferGetHeight(pixelBuffer))
 
-        // Calculate overall motion intensity
+        // Calculate overall motion intensity as average of all motion vector magnitudes
         let avgMotion =
           motionVectors.map { $0.magnitude }.reduce(0, +) / Double(motionVectors.count)
 
-        // Determine motion type
+        // Determine motion type based on intensity and direction patterns
         let motionType = classifyMotion(motionVectors, avgMotion)
 
-        // Calculate average motion direction
+        // Calculate average motion direction across all vectors
         let avgDirection = calculateAverageDirection(motionVectors)
 
         motionData.append(
@@ -118,13 +118,15 @@ class MotionAnalyzer {
   private func calculateOpticalFlow(_ frame1: [UInt8], _ frame2: [UInt8], width: Int, height: Int)
     -> [(x: Int, y: Int, magnitude: Double)]
   {
-    // Simplified optical flow using block matching
+    // Simplified optical flow using block matching algorithm
+    // This compares small blocks of pixels between frames to find movement
     var motionVectors: [(x: Int, y: Int, magnitude: Double)] = []
 
-    let blockSize = 32  // Increased block size
-    let searchRange = 4  // Reduced search range
+    let blockSize = 32  // Size of pixel blocks to compare (larger = faster but less precise)
+    let searchRange = 4  // How far to search for matching blocks (±4 pixels)
 
-    // Sample blocks at larger intervals
+    // Sample blocks at larger intervals for performance (every 128 pixels instead of every 32)
+    // This reduces computation while still capturing overall motion patterns
     for y in stride(from: blockSize, to: height - blockSize, by: blockSize * 4) {  // Sample every 128 pixels
       for x in stride(from: blockSize, to: width - blockSize, by: blockSize * 4) {
         let motionVector = findBestMatch(
@@ -142,27 +144,29 @@ class MotionAnalyzer {
     width: Int, height: Int
   ) -> (x: Int, y: Int, magnitude: Double) {
     // Simplified motion estimation - check center and a few nearby positions
+    // This is a basic implementation that tests 5 positions: center, left, right, up, down
     let positions = [
-      (dx: 0, dy: 0),  // No motion
-      (dx: -2, dy: 0),  // Left
-      (dx: 2, dy: 0),  // Right
-      (dx: 0, dy: -2),  // Up
-      (dx: 0, dy: 2),  // Down
+      (dx: 0, dy: 0),  // No motion (reference point)
+      (dx: -2, dy: 0),  // Left movement
+      (dx: 2, dy: 0),  // Right movement
+      (dx: 0, dy: -2),  // Up movement
+      (dx: 0, dy: 2),  // Down movement
     ]
 
     var bestMatch = (dx: 0, dy: 0)
     var minDifference = Double.infinity
 
+    // Test each possible motion position and find the one with least pixel difference
     for (dx, dy) in positions {
       let newX = x + dx
       let newY = y + dy
 
-      // Check bounds
+      // Skip positions that would go outside frame boundaries
       if newX < 0 || newX + blockSize >= width || newY < 0 || newY + blockSize >= height {
         continue
       }
 
-      // Calculate block difference
+      // Calculate how different the blocks are (lower = better match)
       let difference = calculateBlockDifference(
         frame1, frame2, x1: x, y1: y, x2: newX, y2: newY, blockSize: blockSize, width: width)
 
@@ -172,6 +176,7 @@ class MotionAnalyzer {
       }
     }
 
+    // Calculate motion magnitude using Pythagorean theorem
     let magnitude = sqrt(Double(bestMatch.dx * bestMatch.dx + bestMatch.dy * bestMatch.dy))
     return (x: bestMatch.dx, y: bestMatch.dy, magnitude: magnitude)
   }
@@ -201,23 +206,25 @@ class MotionAnalyzer {
   private func classifyMotion(
     _ motionVectors: [(x: Int, y: Int, magnitude: Double)], _ avgMotion: Double
   ) -> String {
+    // Classify motion based on intensity thresholds and directional patterns
     if avgMotion < 0.5 {
-      return "static"
+      return "static"  // Very little motion detected
     } else if avgMotion < 2.0 {
-      return "subtle"
+      return "subtle"  // Minor motion (background movement, small objects)
     } else if avgMotion < 5.0 {
-      // Check for directional motion
+      // Check for directional motion (camera pans, object tracking)
       let avgDirection = calculateAverageDirection(motionVectors)
       if let direction = avgDirection {
+        // Convert direction vector to angle in degrees
         let angle = atan2(direction.y, direction.x) * 180 / .pi
         if abs(angle) < 45 {
-          return "right_pan"
+          return "right_pan"  // Camera panning right
         } else if abs(angle) > 135 {
-          return "left_pan"
+          return "left_pan"  // Camera panning left
         } else if angle > 45 && angle < 135 {
-          return "down_pan"
+          return "down_pan"  // Camera panning down
         } else {
-          return "up_pan"
+          return "up_pan"  // Camera panning up
         }
       }
       return "motion"

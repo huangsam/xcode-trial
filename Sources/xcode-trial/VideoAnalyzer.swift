@@ -74,16 +74,18 @@ class VideoAnalyzer {
   }
 
   private func loadVideoMetadata() {
+    // Use semaphore to wait for async asset loading to complete
+    // AVAsset loading is asynchronous, but we need metadata immediately for initialization
     let semaphore = DispatchSemaphore(value: 0)
     var loadError: NSError?
 
     asset.loadValuesAsynchronously(forKeys: ["duration", "tracks"]) {
-      semaphore.signal()
+      semaphore.signal()  // Signal completion of async loading
     }
 
-    semaphore.wait()
+    semaphore.wait()  // Block until loading completes
 
-    // Check if loading succeeded
+    // Check if loading succeeded - AVAsset can fail to load corrupted or unsupported files
     let durationStatus = asset.statusOfValue(forKey: "duration", error: &loadError)
     let tracksStatus = asset.statusOfValue(forKey: "tracks", error: &loadError)
 
@@ -94,7 +96,7 @@ class VideoAnalyzer {
 
     duration = CMTimeGetSeconds(asset.duration)
 
-    // Get video track info
+    // Get video track info - extract resolution, framerate, and codec details
     guard let track = asset.tracks(withMediaType: .video).first else {
       print("❌ No video track found")
       return

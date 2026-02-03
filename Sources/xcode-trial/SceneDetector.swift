@@ -76,12 +76,14 @@ class SceneDetector {
       let histogram = calculateHistogram(from: pixelBuffer)
       let timestamp = CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
 
-      // Multiple scene detection methods
+      // Multiple scene detection methods for different transition types
       if let previous = previousFrameData, let prevHist = previousHistogram {
+        // Calculate differences between consecutive frames
         let pixelDifference = videoAnalyzer.calculateFrameDifference(previous, frameData)
         let histogramDifference = calculateHistogramDifference(prevHist, histogram)
 
-        // Hard cut detection (sudden change)
+        // Hard cut detection: sudden, dramatic change (most common transition)
+        // Both pixel and histogram differences must exceed thresholds
         if pixelDifference > 0.3 && histogramDifference > 0.4 {
           sceneBoundaries.append(
             (
@@ -89,11 +91,12 @@ class SceneDetector {
               confidence: min(pixelDifference, histogramDifference)
             ))
         }
-        // Fade detection (gradual brightness change)
+        // Fade detection: gradual brightness change (fade in/out to black/white)
         else if detectFade(pixelBuffer, previousFrame: previous) {
           sceneBoundaries.append((timestamp: timestamp, type: "fade", confidence: 0.7))
         }
-        // Dissolve detection (gradual pixel change)
+        // Dissolve detection: gradual pixel blending between scenes
+        // High pixel difference but low histogram difference (similar colors)
         else if pixelDifference > 0.15 && histogramDifference < 0.2 {
           sceneBoundaries.append(
             (timestamp: timestamp, type: "dissolve", confidence: pixelDifference))

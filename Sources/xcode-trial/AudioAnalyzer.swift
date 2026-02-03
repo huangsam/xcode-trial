@@ -90,26 +90,33 @@ class AudioAnalyzer {
         // Create Data from the buffer
         let data = Data(bytes: audioBytes, count: length)
 
-        // Calculate RMS volume from 16-bit PCM data
+        // Calculate RMS (Root Mean Square) volume from 16-bit PCM data
+        // RMS gives perceived loudness - more accurate than simple averaging
         var sum: Double = 0
         var sampleCount = 0
 
-        // Process 16-bit samples (2 bytes each)
+        // Process 16-bit samples (2 bytes each, little-endian)
         for i in stride(from: 0, to: data.count, by: 2) {
           if i + 1 < data.count {
             let lowByte = data[i]
             let highByte = data[i + 1]
+            // Reconstruct 16-bit signed integer from two bytes
             let sample = Int16(lowByte) | (Int16(highByte) << 8)
+            // Normalize to -1.0 to 1.0 range
             let normalizedSample = Double(sample) / 32768.0
+            // Square for RMS calculation (sum of squares)
             sum += normalizedSample * normalizedSample
             sampleCount += 1
           }
         }
 
         if sampleCount > 0 {
+          // RMS = sqrt(average of squares)
           let rms = sqrt(sum / Double(sampleCount))
-          let volume = min(rms * 100, 100)  // Scale to 0-100
-          let isSilent = volume < 1.0  // Threshold for silence
+          // Scale RMS to 0-100 percentage and cap at 100
+          let volume = min(rms * 100, 100)
+          // Detect silence (very low volume)
+          let isSilent = volume < 1.0
 
           audioData.append((timestamp: timestamp, volume: volume, isSilent: isSilent))
         }
@@ -134,6 +141,7 @@ class AudioAnalyzer {
   ) {
     if audioData.isEmpty { return }
 
+    // Calculate basic audio statistics
     let avgVolume = audioData.map { $0.volume }.reduce(0, +) / Double(audioData.count)
     let silentSegments = audioData.filter { $0.isSilent }.count
     let silencePercentage = Double(silentSegments) / Double(audioData.count) * 100
@@ -142,7 +150,7 @@ class AudioAnalyzer {
     print("    Average volume: \(String(format: "%.1f", avgVolume))%")
     print("    Silent segments: \(silentSegments) (\(String(format: "%.1f", silencePercentage))%)")
 
-    // Detect volume changes
+    // Detect significant volume changes (potential scene changes or speaker transitions)
     var volumeChanges = 0
     for i in 1..<audioData.count {
       if abs(audioData[i].volume - audioData[i - 1].volume) > 20 {  // 20% change threshold
