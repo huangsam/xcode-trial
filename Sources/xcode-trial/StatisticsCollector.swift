@@ -190,7 +190,7 @@ class StatisticsCollector {
   func exportToJSON(filePath: String) throws {
     let jsonData = try JSONSerialization.data(withJSONObject: statistics, options: .prettyPrinted)
     try jsonData.write(to: URL(fileURLWithPath: filePath))
-    logger.info("Analysis results exported to: \(filePath)")
+    logger.info("Analysis exported to: \(filePath)")
   }
 
   /// Exports all statistics to a CSV file.
@@ -207,6 +207,6 @@ class StatisticsCollector {
     }
 
     try csvContent.write(toFile: filePath, atomically: true, encoding: .utf8)
-    logger.info("Analysis results exported to CSV: \(filePath)")
+    logger.info("Analysis exported to: \(filePath)")
   }
 }

@@ -74,7 +74,6 @@ func runFullAnalysis(videoPath: String, arguments: [String]) {
   }
 
   logger.info("Analysis complete!")
-  logger.info("Results exported to: \(exportPath)")
 }
 
 let arguments = CommandLine.arguments
