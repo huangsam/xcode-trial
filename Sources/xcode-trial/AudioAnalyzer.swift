@@ -160,7 +160,7 @@ class AudioAnalyzer {
     }
 
     if volumeChanges > 0 {
-      logger.debug("  Volume changes detected: \(volumeChanges)")
+      logger.debug("Volume changes detected: \(volumeChanges)")
     }
 
     // Analyze speaking patterns (rough approximation)
@@ -168,7 +168,7 @@ class AudioAnalyzer {
     let speakingPercentage = Double(speakingSegments) / Double(audioData.count) * 100
 
     if speakingPercentage > 10 {
-      logger.debug("  Estimated speaking time: \(String(format: "%.1f", speakingPercentage))%")
+      logger.debug("Estimated speaking time: \(String(format: "%.1f", speakingPercentage))%")
     }
   }
 }
