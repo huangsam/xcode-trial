@@ -3,6 +3,49 @@ import CoreImage
 import Foundation
 import Vision
 
+/// Performs optical character recognition (OCR) on video frames.
+///
+/// `TextDetector` uses Apple's Vision framework to detect and extract text
+/// from video frames, providing temporal text analysis capabilities. It handles
+/// various text styles, languages, and orientations commonly found in videos.
+///
+/// Key capabilities:
+/// - Text detection and recognition in video frames
+/// - Confidence scoring for recognition accuracy
+/// - Multi-language text support
+/// - Temporal text tracking across frames
+///
+/// Technical implementation:
+/// - Uses VNRecognizeTextRequest for OCR processing
+/// - Processes frames sequentially through video timeline
+/// - Filters results by confidence thresholds
+/// - Aggregates text occurrences over time
+///
+/// Vision framework features:
+/// - Automatic language detection
+/// - Text orientation and layout analysis
+/// - Handwriting and printed text recognition
+/// - Performance optimization for real-time processing
+///
+/// Performance considerations:
+/// - Processes frames at reduced frequency for efficiency
+/// - Memory-efficient text result storage
+/// - Configurable confidence thresholds
+/// - Early termination for text-free content
+///
+/// Applications:
+/// - Video caption and subtitle extraction
+/// - Content-based search and indexing
+/// - Accessibility feature analysis
+/// - Brand and logo text detection
+///
+/// Limitations:
+/// - Accuracy depends on text size and clarity
+/// - Performance varies by language complexity
+/// - May miss stylized or distorted text
+///
+/// Output format:
+/// Returns array of (timestamp, text, confidence) tuples for text analysis
 class TextDetector {
   private let videoAnalyzer: VideoAnalyzer
 

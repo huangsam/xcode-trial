@@ -2,6 +2,44 @@ import AVFoundation
 import CoreImage
 import Foundation
 
+/// Detects scene boundaries and transitions in video content.
+///
+/// `SceneDetector` analyzes temporal changes between consecutive frames to identify
+/// scene boundaries and classify transition types. It uses histogram comparison
+/// and edge detection techniques to detect significant visual changes.
+///
+/// Key algorithms:
+/// - Histogram-based frame difference analysis
+/// - Edge detection for content change identification
+/// - Adaptive thresholding for scene boundary detection
+/// - Transition type classification (cut, fade, dissolve)
+///
+/// Technical implementation:
+/// - Compares RGB histograms between consecutive frames
+/// - Calculates histogram intersection similarity scores
+/// - Applies temporal smoothing to reduce false positives
+/// - Classifies transitions based on change characteristics
+///
+/// Scene detection parameters:
+/// - Similarity threshold: minimum change for scene boundary
+/// - Minimum scene duration: prevents overly short scenes
+/// - Transition window: frames around detected boundaries
+/// - Confidence scoring for boundary reliability
+///
+/// Performance optimizations:
+/// - Processes frames at reduced resolution
+/// - Uses efficient histogram calculations
+/// - Early termination for static content
+/// - Memory-efficient frame buffering
+///
+/// Applications:
+/// - Video segmentation and chapter detection
+/// - Content-based navigation and indexing
+/// - Editing analysis and style recognition
+/// - Automated highlight extraction
+///
+/// Output format:
+/// Returns array of (timestamp, transitionType) tuples for scene analysis
 class SceneDetector {
   private let videoAnalyzer: VideoAnalyzer
 

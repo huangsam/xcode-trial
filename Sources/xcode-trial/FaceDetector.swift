@@ -3,6 +3,36 @@ import CoreImage
 import Foundation
 import Vision
 
+/// Detects and analyzes faces in video frames using Apple's Vision framework.
+///
+/// `FaceDetector` performs comprehensive facial analysis including face detection,
+/// landmark identification, and temporal tracking across video frames. It leverages
+/// machine learning models built into iOS/macOS for accurate facial feature detection.
+///
+/// Key capabilities:
+/// - Face detection with bounding box coordinates
+/// - Facial landmark extraction (eyes, nose, mouth, etc.)
+/// - Multi-face tracking across frames
+/// - Confidence scoring for detection quality
+///
+/// Technical implementation:
+/// - Processes video frames sequentially using AVAssetReader
+/// - Converts CVPixelBuffer to CIImage for Vision processing
+/// - Uses VNDetectFaceLandmarksRequest for detailed analysis
+/// - Filters results by confidence thresholds
+///
+/// Performance optimizations:
+/// - Processes frames at native video framerate
+/// - Memory-efficient buffer management
+/// - Early termination for frames without faces
+///
+/// Vision framework integration:
+/// - Leverages pre-trained Core ML models
+/// - Automatic model loading and caching
+/// - Hardware acceleration on supported devices
+///
+/// Output format:
+/// Returns array of (timestamp, faceCount, landmarks) tuples for temporal analysis
 class FaceDetector {
   private let videoAnalyzer: VideoAnalyzer
 

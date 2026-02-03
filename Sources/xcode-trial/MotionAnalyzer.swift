@@ -2,6 +2,41 @@ import AVFoundation
 import CoreImage
 import Foundation
 
+/// Analyzes motion and optical flow between consecutive video frames.
+///
+/// `MotionAnalyzer` implements optical flow algorithms to detect and quantify
+/// movement between video frames. It uses simplified block matching techniques
+/// to calculate motion vectors and intensity measurements for temporal analysis.
+///
+/// Key algorithms:
+/// - Block matching optical flow for motion estimation
+/// - Motion vector calculation between frame pairs
+/// - Motion intensity aggregation across frame regions
+///
+/// Technical approach:
+/// - Compares grayscale representations of consecutive frames
+/// - Uses 16x16 pixel blocks for motion estimation
+/// - Searches within ±8 pixel radius for block matches
+/// - Calculates motion magnitude and direction vectors
+///
+/// Performance optimizations:
+/// - Downsamples frames to reduce computational complexity
+/// - Processes motion at reduced framerate for efficiency
+/// - Memory-efficient frame buffer management
+/// - Early termination for static scenes
+///
+/// Motion metrics:
+/// - Motion intensity: average magnitude of motion vectors
+/// - Motion direction: dominant movement patterns
+/// - Temporal consistency: motion stability over time
+///
+/// Limitations:
+/// - Simplified algorithm trades accuracy for speed
+/// - May miss subtle motions in low-contrast scenes
+/// - Block-based approach can miss object boundaries
+///
+/// Output format:
+/// Returns array of (timestamp, intensity) tuples for motion analysis
 class MotionAnalyzer {
   private let videoAnalyzer: VideoAnalyzer
 

@@ -3,6 +3,37 @@ import CoreImage
 import Foundation
 import Vision
 
+/// The main video analysis orchestrator that coordinates multimodal analysis of video content.
+///
+/// `VideoAnalyzer` serves as the central hub for comprehensive video analysis, managing
+/// specialized analyzers for different aspects of video content including faces, scenes,
+/// colors, motion, audio, and text. It handles video asset loading, metadata extraction,
+/// and coordinates the execution of all analysis types.
+///
+/// Key responsibilities:
+/// - Video asset management and metadata loading
+/// - Coordination of specialized analysis modules
+/// - Result aggregation and statistics collection
+/// - Performance optimization through lazy initialization
+///
+/// Design decisions:
+/// - Uses lazy initialization for analyzers to avoid self-reference issues
+/// - Maintains backward compatibility with legacy result arrays
+/// - Delegates complex analysis to specialized single-responsibility classes
+///
+/// Dependencies:
+/// - AVFoundation for video asset handling
+/// - Vision framework for computer vision tasks
+/// - CoreImage for image processing operations
+///
+/// Example usage:
+/// ```swift
+/// let analyzer = VideoAnalyzer(videoPath: "/path/to/video.mp4")
+/// analyzer.analyzeBasicInfo()
+/// analyzer.analyzeFaces()
+/// // ... run other analyses
+/// analyzer.printStatistics()
+/// ```
 class VideoAnalyzer {
   let videoPath: String
   let asset: AVAsset

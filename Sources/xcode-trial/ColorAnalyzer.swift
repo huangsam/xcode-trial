@@ -2,6 +2,44 @@ import AVFoundation
 import CoreImage
 import Foundation
 
+/// Analyzes color composition and dominant colors in video frames.
+///
+/// `ColorAnalyzer` extracts color palettes and analyzes color distribution
+/// across video frames using sampling techniques. It identifies dominant colors
+/// and tracks color changes over time for content analysis.
+///
+/// Key capabilities:
+/// - Dominant color extraction from frame samples
+/// - Color palette generation and ranking
+/// - Temporal color consistency analysis
+/// - Color space conversion and analysis
+///
+/// Sampling strategy:
+/// - Uses 9-point sampling grid across each frame
+/// - Includes center, corners, and midpoints
+/// - Balances coverage with computational efficiency
+/// - Reduces noise through spatial averaging
+///
+/// Color processing:
+/// - Converts RGB to perceptual color spaces
+/// - Applies color clustering algorithms
+/// - Filters out low-frequency colors
+/// - Normalizes for lighting variations
+///
+/// Performance considerations:
+/// - Processes frames at reduced frequency
+/// - Memory-efficient color data structures
+/// - Optimized sampling reduces computation
+/// - Caches results for repeated analysis
+///
+/// Applications:
+/// - Content categorization by color themes
+/// - Brand color detection and tracking
+/// - Mood and aesthetic analysis
+/// - Visual consistency measurement
+///
+/// Output format:
+/// Returns array of (timestamp, colors) tuples with dominant CIColor arrays
 class ColorAnalyzer {
   private let videoAnalyzer: VideoAnalyzer
 

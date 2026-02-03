@@ -1,6 +1,33 @@
 import AVFoundation
 import Foundation
 
+/// Analyzes audio tracks in video files to extract volume levels and silence detection.
+///
+/// `AudioAnalyzer` processes audio data from video assets using digital signal processing
+/// techniques to calculate RMS (Root Mean Square) volume levels and detect silent periods.
+/// The analysis provides temporal audio characteristics that complement visual analysis.
+///
+/// Key algorithms:
+/// - RMS volume calculation for perceived loudness measurement
+/// - Silence detection using adaptive thresholds
+/// - 10Hz sampling rate for temporal resolution
+///
+/// Technical details:
+/// - Processes 16-bit linear PCM audio data
+/// - Uses 1024-sample windows for RMS calculation
+/// - Silence threshold adapts based on content characteristics
+///
+/// Performance considerations:
+/// - Processes audio at 10fps to balance accuracy and speed
+/// - Memory-efficient streaming processing of audio buffers
+/// - Early termination for videos without audio tracks
+///
+/// Dependencies:
+/// - AVFoundation for audio track reading and format conversion
+/// - Accelerate framework (implicit) for efficient math operations
+///
+/// Output format:
+/// Returns array of (timestamp, volume, isSilent) tuples for temporal analysis
 class AudioAnalyzer {
   private let videoAnalyzer: VideoAnalyzer
 
