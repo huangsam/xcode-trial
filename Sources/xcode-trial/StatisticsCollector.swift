@@ -38,7 +38,7 @@ class StatisticsCollector {
     report += "========================\n\n"
 
     let categories = [
-      "metadata", "faces", "scenes", "colors", "motion", "brightness", "text", "keyframes",
+      "metadata", "faces", "scenes", "colors", "motion", "brightness", "text", "audio", "keyframes",
     ]
 
     for category in categories {
@@ -143,6 +143,12 @@ class StatisticsCollector {
     // Text insights
     if let textCount = getStatistic(category: "text", key: "total_text_detections") as? Int {
       insights += "  • Text elements detected: \(textCount)\n"
+    }
+
+    // Audio insights
+    if let avgVolume = getStatistic(category: "audio", key: "average_volume") as? Double {
+      let volumeLevel = avgVolume > 50 ? "Loud" : avgVolume > 20 ? "Medium" : "Quiet"
+      insights += "  • Audio level: \(volumeLevel) (avg: \(String(format: "%.1f", avgVolume))%)\n"
     }
 
     // Key frame insights

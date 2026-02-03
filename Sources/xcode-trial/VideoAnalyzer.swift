@@ -18,6 +18,7 @@ class VideoAnalyzer {
   lazy var colorAnalyzer: ColorAnalyzer = ColorAnalyzer(videoAnalyzer: self)
   lazy var motionAnalyzer: MotionAnalyzer = MotionAnalyzer(videoAnalyzer: self)
   lazy var textDetector: TextDetector = TextDetector(videoAnalyzer: self)
+  lazy var audioAnalyzer: AudioAnalyzer = AudioAnalyzer(videoAnalyzer: self)
   lazy var statisticsCollector: StatisticsCollector = StatisticsCollector()
 
   // Public access to statistics collector
@@ -31,6 +32,7 @@ class VideoAnalyzer {
   var motionIntensities: [(timestamp: Double, intensity: Double)] = []
   var brightnessLevels: [(timestamp: Double, brightness: Double)] = []
   var detectedText: [(timestamp: Double, text: String, confidence: Float)] = []
+  var audioLevels: [(timestamp: Double, volume: Double, isSilent: Bool)] = []
   var keyFrames: [(timestamp: Double, image: CIImage)] = []
 
   init(videoPath: String) {
@@ -273,6 +275,25 @@ class VideoAnalyzer {
         detectedText.map { $0.confidence }.reduce(0, +) / Float(detectedText.count)
       statisticsCollector.addStatistic(
         category: "text", key: "average_text_confidence", value: avgConfidence)
+    }
+  }
+
+  func analyzeAudio() {
+    let audioResults = audioAnalyzer.analyzeAudio()
+    audioLevels = audioResults
+
+    // Collect statistics
+    statisticsCollector.addStatistic(
+      category: "audio", key: "audio_segments_analyzed", value: audioLevels.count)
+    if !audioLevels.isEmpty {
+      let avgVolume = audioLevels.map { $0.volume }.reduce(0, +) / Double(audioLevels.count)
+      statisticsCollector.addStatistic(
+        category: "audio", key: "average_volume", value: avgVolume)
+
+      let silentSegments = audioLevels.filter { $0.isSilent }.count
+      let silencePercentage = Double(silentSegments) / Double(audioLevels.count) * 100
+      statisticsCollector.addStatistic(
+        category: "audio", key: "silence_percentage", value: silencePercentage)
     }
   }
 
