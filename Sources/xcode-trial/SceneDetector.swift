@@ -42,84 +42,80 @@ import Foundation
 /// Returns array of (timestamp, transitionType) tuples for scene analysis
 class SceneDetector {
   private let videoAnalyzer: VideoAnalyzer
+  private let videoReader: VideoReader
 
   init(videoAnalyzer: VideoAnalyzer) {
     self.videoAnalyzer = videoAnalyzer
+    self.videoReader = VideoReader(videoAnalyzer: videoAnalyzer)
   }
 
   /// Detects scene boundaries and classifies transition types.
   func detectSceneBoundaries() -> [(timestamp: Double, type: String, confidence: Double)] {
-    print("🎬 Performing advanced scene detection...")
-
-    guard let videoTrack = videoAnalyzer.videoTrack else { return [] }
-
-    let reader = try? AVAssetReader(asset: videoAnalyzer.asset)
-    let outputSettings: [String: Any] = [
-      kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA
-    ]
-
-    let trackOutput = AVAssetReaderTrackOutput(track: videoTrack, outputSettings: outputSettings)
-    reader?.add(trackOutput)
-
-    guard reader?.startReading() == true else { return [] }
+    logger.info("🎬 Performing advanced scene detection...")
 
     var sceneBoundaries: [(timestamp: Double, type: String, confidence: Double)] = []
-    var frameCount = 0
     var previousFrameData: [UInt8]?
     var previousHistogram: [Int]?
 
-    while let sampleBuffer = trackOutput.copyNextSampleBuffer() {
-      frameCount += 1
+    do {
+      try videoReader.readFrames { frameResult in
+        let frameData = frameResult.frameData
+        let histogram = calculateHistogram(from: frameResult.pixelBuffer)
+        let timestamp = frameResult.timestamp
 
-      guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { continue }
+        // Multiple scene detection methods for different transition types
+        if let previous = previousFrameData, let prevHist = previousHistogram {
+          // Calculate differences between consecutive frames
+          let pixelDifference = videoAnalyzer.calculateFrameDifference(previous, frameData)
+          let histogramDifference = calculateHistogramDifference(prevHist, histogram)
 
-      let frameData = videoAnalyzer.extractFrameData(from: pixelBuffer)
-      let histogram = calculateHistogram(from: pixelBuffer)
-      let timestamp = CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
-
-      // Multiple scene detection methods for different transition types
-      if let previous = previousFrameData, let prevHist = previousHistogram {
-        // Calculate differences between consecutive frames
-        let pixelDifference = videoAnalyzer.calculateFrameDifference(previous, frameData)
-        let histogramDifference = calculateHistogramDifference(prevHist, histogram)
-
-        // Hard cut detection: sudden, dramatic change (most common transition)
-        // Both pixel and histogram differences must exceed thresholds
-        if pixelDifference > 0.3 && histogramDifference > 0.4 {
-          sceneBoundaries.append(
-            (
-              timestamp: timestamp, type: "hard_cut",
-              confidence: min(pixelDifference, histogramDifference)
-            ))
+          // Hard cut detection: sudden, dramatic change (most common transition)
+          // Both pixel and histogram differences must exceed thresholds
+          if pixelDifference > 0.3 && histogramDifference > 0.4 {
+            sceneBoundaries.append(
+              (
+                timestamp: timestamp, type: "hard_cut",
+                confidence: min(pixelDifference, histogramDifference)
+              ))
+          }
+          // Fade detection: gradual brightness change (fade in/out to black/white)
+          else if detectFade(frameResult.pixelBuffer, previousFrame: previous) {
+            sceneBoundaries.append((timestamp: timestamp, type: "fade", confidence: 0.7))
+          }
+          // Dissolve detection: gradual pixel blending between scenes
+          // High pixel difference but low histogram difference (similar colors)
+          else if pixelDifference > 0.15 && histogramDifference < 0.2 {
+            sceneBoundaries.append(
+              (timestamp: timestamp, type: "dissolve", confidence: pixelDifference))
+          }
         }
-        // Fade detection: gradual brightness change (fade in/out to black/white)
-        else if detectFade(pixelBuffer, previousFrame: previous) {
-          sceneBoundaries.append((timestamp: timestamp, type: "fade", confidence: 0.7))
-        }
-        // Dissolve detection: gradual pixel blending between scenes
-        // High pixel difference but low histogram difference (similar colors)
-        else if pixelDifference > 0.15 && histogramDifference < 0.2 {
-          sceneBoundaries.append(
-            (timestamp: timestamp, type: "dissolve", confidence: pixelDifference))
-        }
+
+        previousFrameData = frameData
+        previousHistogram = histogram
+
+        return true  // Continue processing
       }
-
-      previousFrameData = frameData
-      previousHistogram = histogram
-
-      if frameCount >= 1000 { break }  // Demo limit
+    } catch VideoReaderError.assetReaderCreationFailed {
+      logger.error("❌ Failed to create asset reader for scene detection")
+    } catch VideoReaderError.trackOutputCreationFailed {
+      logger.error("❌ Failed to create track output for scene detection")
+    } catch VideoReaderError.readingFailed(let message) {
+      logger.error("❌ Scene detection reading failed: \(message)")
+    } catch VideoReaderError.pixelBufferExtractionFailed {
+      logger.error("❌ Failed to extract pixel buffer during scene detection")
+    } catch VideoReaderError.invalidFrameData {
+      logger.error("❌ Invalid frame data encountered during scene detection")
+    } catch {
+      logger.error("❌ Unexpected error during scene detection: \(error.localizedDescription)")
     }
 
-    reader?.cancelReading()
+    logger.info("✅ Scene detection completed - found \(sceneBoundaries.count) scene boundaries")
 
-    print("  ✅ Detected \(sceneBoundaries.count) scene boundaries")
     let cutCount = sceneBoundaries.filter { $0.type == "hard_cut" }.count
     let fadeCount = sceneBoundaries.filter { $0.type == "fade" }.count
     let dissolveCount = sceneBoundaries.filter { $0.type == "dissolve" }.count
 
-    print("  ✂️  Hard cuts: \(cutCount)")
-    print("  🌅 Fades: \(fadeCount)")
-    print("  🔄 Dissolves: \(dissolveCount)")
+    logger.info("Hard cuts: \(cutCount), Fades: \(fadeCount), Dissolves: \(dissolveCount)")
 
     analyzeSceneLengths(sceneBoundaries)
 

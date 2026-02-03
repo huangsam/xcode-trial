@@ -35,72 +35,64 @@ import Vision
 /// Returns array of (timestamp, faceCount, landmarks) tuples for temporal analysis
 class FaceDetector {
   private let videoAnalyzer: VideoAnalyzer
+  private let videoReader: VideoReader
 
   init(videoAnalyzer: VideoAnalyzer) {
     self.videoAnalyzer = videoAnalyzer
+    self.videoReader = VideoReader(videoAnalyzer: videoAnalyzer)
   }
 
   /// Detects faces in video frames using Vision framework.
   func analyzeFaces() -> [(timestamp: Double, count: Int, landmarks: VNFaceLandmarks2D?)] {
-    print("🎭 Performing detailed face analysis...")
-
-    guard let videoTrack = videoAnalyzer.videoTrack else { return [] }
-
-    let reader = try? AVAssetReader(asset: videoAnalyzer.asset)
-    let outputSettings: [String: Any] = [
-      kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA
-    ]
-
-    let trackOutput = AVAssetReaderTrackOutput(track: videoTrack, outputSettings: outputSettings)
-    reader?.add(trackOutput)
-
-    guard reader?.startReading() == true else { return [] }
+    logger.info("🎭 Performing detailed face analysis...")
 
     var results: [(timestamp: Double, count: Int, landmarks: VNFaceLandmarks2D?)] = []
-    var frameCount = 0
 
-    while let sampleBuffer = trackOutput.copyNextSampleBuffer() {
-      frameCount += 1
+    do {
+      try videoReader.readFrames(interval: 10) { frameResult in  // Process every 10th frame for performance
+        let ciImage = CIImage(cvPixelBuffer: frameResult.pixelBuffer)
+        let timestamp = frameResult.timestamp
 
-      guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { continue }
+        // Face detection with landmarks using Vision framework
+        let faceDetectionRequest = VNDetectFaceLandmarksRequest()
 
-      let ciImage = CIImage(cvPixelBuffer: pixelBuffer)
-      let timestamp = CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
+        let requestHandler = VNImageRequestHandler(ciImage: ciImage, options: [:])
 
-      // Face detection with landmarks using Vision framework
-      // VNDetectFaceLandmarksRequest automatically detects faces and extracts facial features
-      let faceDetectionRequest = VNDetectFaceLandmarksRequest { request, error in
-        // Vision requests are asynchronous - this completion handler runs on background thread
-        guard let observations = request.results as? [VNFaceObservation] else { return }
+        try requestHandler.perform([faceDetectionRequest])
+
+        guard let observations = faceDetectionRequest.results else {
+          logger.warning("⚠️ Face detection failed to return valid observations")
+          return true
+        }
 
         if !observations.isEmpty {
           // Store first face's landmarks (could be extended to handle multiple faces)
+          let firstFace = observations[0]
           results.append(
             (
               timestamp: timestamp,
               count: observations.count,
-              landmarks: observations.first?.landmarks
+              landmarks: firstFace.landmarks
             ))
         }
+
+        return true  // Continue processing
       }
-
-      faceDetectionRequest.revision = VNDetectFaceLandmarksRequestRevision3
-
-      let handler = VNImageRequestHandler(ciImage: ciImage, options: [:])
-      try? handler.perform([faceDetectionRequest])
-
-      if frameCount >= 500 { break }  // Demo limit
+    } catch VideoReaderError.assetReaderCreationFailed {
+      logger.error("❌ Failed to create asset reader for face detection")
+    } catch VideoReaderError.trackOutputCreationFailed {
+      logger.error("❌ Failed to create track output for face detection")
+    } catch VideoReaderError.readingFailed(let message) {
+      logger.error("❌ Face detection reading failed: \(message)")
+    } catch VideoReaderError.pixelBufferExtractionFailed {
+      logger.error("❌ Failed to extract pixel buffer during face detection")
+    } catch VideoReaderError.invalidFrameData {
+      logger.error("❌ Invalid frame data encountered during face detection")
+    } catch {
+      logger.error("❌ Unexpected error during face detection: \(error.localizedDescription)")
     }
 
-    reader?.cancelReading()
-
-    print("  ✅ Detected faces in \(results.count) frames")
-    let totalFaces = results.reduce(0) { $0 + $1.count }
-    print("  👥 Total faces: \(totalFaces)")
-
-    // Analyze face presence patterns
-    analyzeFacePatterns(results)
-
+    logger.info("✅ Face analysis completed - detected faces in \(results.count) frames")
     return results
   }
 

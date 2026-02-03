@@ -39,76 +39,72 @@ import Foundation
 /// Returns array of (timestamp, intensity) tuples for motion analysis
 class MotionAnalyzer {
   private let videoAnalyzer: VideoAnalyzer
+  private let videoReader: VideoReader
 
   init(videoAnalyzer: VideoAnalyzer) {
     self.videoAnalyzer = videoAnalyzer
+    self.videoReader = VideoReader(videoAnalyzer: videoAnalyzer)
   }
 
   /// Analyzes motion between consecutive video frames using optical flow.
   func analyzeMotion() -> [(
     timestamp: Double, intensity: Double, direction: (x: Double, y: Double)?, type: String
   )] {
-    print("⚡ Performing advanced motion analysis...")
-
-    guard let videoTrack = videoAnalyzer.videoTrack else { return [] }
-
-    let reader = try? AVAssetReader(asset: videoAnalyzer.asset)
-    let outputSettings: [String: Any] = [
-      kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA
-    ]
-
-    let trackOutput = AVAssetReaderTrackOutput(track: videoTrack, outputSettings: outputSettings)
-    reader?.add(trackOutput)
-
-    guard reader?.startReading() == true else { return [] }
+    logger.info("⚡ Performing advanced motion analysis...")
 
     var motionData:
       [(timestamp: Double, intensity: Double, direction: (x: Double, y: Double)?, type: String)] =
         []
-    var frameCount = 0
     var previousFrameData: [UInt8]?
 
-    while let sampleBuffer = trackOutput.copyNextSampleBuffer() {
-      frameCount += 1
+    do {
+      try videoReader.readFrames { frameResult in
+        let currentFrameData = frameResult.frameData
+        let timestamp = frameResult.timestamp
 
-      guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { continue }
+        if let previous = previousFrameData {
+          // Calculate optical flow (simplified block matching)
+          let motionVectors = calculateOpticalFlow(
+            previous, currentFrameData, width: CVPixelBufferGetWidth(frameResult.pixelBuffer),
+            height: CVPixelBufferGetHeight(frameResult.pixelBuffer))
 
-      let frameData = videoAnalyzer.extractFrameData(from: pixelBuffer)
-      let timestamp = CMTimeGetSeconds(CMSampleBufferGetPresentationTimeStamp(sampleBuffer))
+          // Calculate overall motion intensity as average of all motion vector magnitudes
+          let avgMotion =
+            motionVectors.map { $0.magnitude }.reduce(0, +) / Double(motionVectors.count)
 
-      if let previous = previousFrameData {
-        // Calculate optical flow (simplified block matching)
-        let motionVectors = calculateOpticalFlow(
-          previous, frameData, width: CVPixelBufferGetWidth(pixelBuffer),
-          height: CVPixelBufferGetHeight(pixelBuffer))
+          // Determine motion type based on intensity and direction patterns
+          let motionType = classifyMotion(motionVectors, avgMotion)
 
-        // Calculate overall motion intensity as average of all motion vector magnitudes
-        let avgMotion =
-          motionVectors.map { $0.magnitude }.reduce(0, +) / Double(motionVectors.count)
+          // Calculate average motion direction across all vectors
+          let avgDirection = calculateAverageDirection(motionVectors)
 
-        // Determine motion type based on intensity and direction patterns
-        let motionType = classifyMotion(motionVectors, avgMotion)
+          motionData.append(
+            (
+              timestamp: timestamp,
+              intensity: avgMotion,
+              direction: avgDirection,
+              type: motionType
+            ))
+        }
 
-        // Calculate average motion direction across all vectors
-        let avgDirection = calculateAverageDirection(motionVectors)
-
-        motionData.append(
-          (
-            timestamp: timestamp,
-            intensity: avgMotion,
-            direction: avgDirection,
-            type: motionType
-          ))
+        previousFrameData = currentFrameData
+        return true  // Continue processing all frames
       }
-
-      previousFrameData = frameData
-
-      if frameCount >= 100 { break }  // Demo limit
+    } catch VideoReaderError.assetReaderCreationFailed {
+      logger.error("❌ Failed to create asset reader for motion analysis")
+    } catch VideoReaderError.trackOutputCreationFailed {
+      logger.error("❌ Failed to create track output for motion analysis")
+    } catch VideoReaderError.readingFailed(let message) {
+      logger.error("❌ Motion analysis reading failed: \(message)")
+    } catch VideoReaderError.pixelBufferExtractionFailed {
+      logger.error("❌ Failed to extract pixel buffer during motion analysis")
+    } catch VideoReaderError.invalidFrameData {
+      logger.error("❌ Invalid frame data encountered during motion analysis")
+    } catch {
+      logger.error("❌ Unexpected error during motion analysis: \(error.localizedDescription)")
     }
 
-    reader?.cancelReading()
-
-    print("  ✅ Analyzed motion in \(motionData.count) frame pairs")
+    logger.info("✅ Motion analysis completed - processed \(motionData.count) frame pairs")
 
     // Analyze motion patterns
     analyzeMotionPatterns(motionData)

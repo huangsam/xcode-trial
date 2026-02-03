@@ -34,8 +34,9 @@ import Vision
 /// 10. Key frame generation
 /// 11. Statistics aggregation and export
 func runFullAnalysis(videoPath: String, arguments: [String]) {
-  print("🔍 Starting comprehensive video analysis...")
-  print("Video: \(videoPath)")
+  setupLogging()
+  logger.info("Starting comprehensive video analysis...")
+  logger.info("Video: \(videoPath)")
   print()
 
   let analyzer = VideoAnalyzer(videoPath: videoPath)
