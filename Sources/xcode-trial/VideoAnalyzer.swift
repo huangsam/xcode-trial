@@ -108,12 +108,11 @@ class VideoAnalyzer {
 
   /// Extracts basic video metadata and displays information.
   func analyzeBasicInfo() {
-    logger.debug("Duration: \(String(format: "%.2f", duration)) seconds")
-    logger.debug("Frame rate: \(frameRate) fps")
-    logger.debug("Dimensions: \(Int(dimensions.width)) x \(Int(dimensions.height))")
-    logger.debug("Total frames: \(totalFrames)")
-    logger.debug("Format: MP4 (AVFoundation)")
-
+    logger.info("Duration: \(String(format: "%.2f", duration)) seconds")
+    logger.info("Frame rate: \(frameRate) fps")
+    logger.info("Dimensions: \(Int(dimensions.width)) x \(Int(dimensions.height))")
+    logger.info("Total frames: \(totalFrames)")
+    logger.info("Format: MP4 (AVFoundation)")
     // Collect statistics
     statisticsCollector.addStatistic(category: "metadata", key: "duration_seconds", value: duration)
     statisticsCollector.addStatistic(category: "metadata", key: "frame_rate_fps", value: frameRate)

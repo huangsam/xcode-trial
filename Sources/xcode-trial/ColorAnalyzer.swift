@@ -95,7 +95,7 @@ class ColorAnalyzer {
 
     reader?.cancelReading()
 
-    logger.debug("Analyzed colors in \(colorAnalyses.count) frames")
+    logger.info("Analyzed colors in \(colorAnalyses.count) frames")
 
     // Analyze color consistency and changes
     analyzeColorConsistency(colorAnalyses)

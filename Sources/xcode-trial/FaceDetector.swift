@@ -92,7 +92,7 @@ class FaceDetector {
       logger.error("Unexpected error during face detection: \(error.localizedDescription)")
     }
 
-    logger.debug("Face analysis completed - detected faces in \(results.count) frames")
+    logger.info("Face analysis completed - detected faces in \(results.count) frames")
     return results
   }
 

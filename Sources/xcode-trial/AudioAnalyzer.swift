@@ -42,14 +42,14 @@ class AudioAnalyzer {
     // Get audio tracks
     let audioTracks = videoAnalyzer.asset.tracks(withMediaType: .audio)
     guard !audioTracks.isEmpty else {
-      logger.debug("No audio tracks found")
+      logger.warning("No audio tracks found")
       return []
     }
 
     let audioTrack = audioTracks[0]
-    logger.debug("Audio format: \(audioTrack.mediaType.rawValue)")
-    logger.debug("Sample rate: \(audioTrack.naturalTimeScale) Hz")
-    logger.debug("Channels: \(audioTrack.naturalSize.width)")
+    logger.info("Audio format: \(audioTrack.mediaType.rawValue)")
+    logger.info("Sample rate: \(audioTrack.naturalTimeScale) Hz")
+    logger.info("Channels: \(audioTrack.naturalSize.width)")
 
     // Create audio reader
     let reader = try? AVAssetReader(asset: videoAnalyzer.asset)
@@ -65,7 +65,7 @@ class AudioAnalyzer {
     reader?.add(trackOutput)
 
     guard reader?.startReading() == true else {
-      logger.debug("Could not start audio reading")
+      logger.warning("Could not start audio reading")
       return []
     }
 
@@ -129,7 +129,7 @@ class AudioAnalyzer {
 
     reader?.cancelReading()
 
-    logger.debug("Analyzed audio in \(audioData.count) segments")
+    logger.info("Analyzed audio in \(audioData.count) segments")
 
     // Analyze audio patterns
     analyzeAudioPatterns(audioData)

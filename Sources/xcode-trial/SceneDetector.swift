@@ -109,13 +109,13 @@ class SceneDetector {
       logger.error("Unexpected error during scene detection: \(error.localizedDescription)")
     }
 
-    logger.debug("Scene detection completed - found \(sceneBoundaries.count) scene boundaries")
+    logger.info("Scene detection completed - found \(sceneBoundaries.count) scene boundaries")
 
     let cutCount = sceneBoundaries.filter { $0.type == "hard_cut" }.count
     let fadeCount = sceneBoundaries.filter { $0.type == "fade" }.count
     let dissolveCount = sceneBoundaries.filter { $0.type == "dissolve" }.count
 
-    logger.debug("Hard cuts: \(cutCount), Fades: \(fadeCount), Dissolves: \(dissolveCount)")
+    logger.info("Hard cuts: \(cutCount), Fades: \(fadeCount), Dissolves: \(dissolveCount)")
 
     return sceneBoundaries
   }

@@ -124,7 +124,7 @@ class TextDetector {
 
     reader?.cancelReading()
 
-    logger.debug("Detected text in \(textDetections.count) frames")
+    logger.info("Detected text in \(textDetections.count) frames")
 
     // Analyze detected text
     analyzeDetectedText(textDetections)

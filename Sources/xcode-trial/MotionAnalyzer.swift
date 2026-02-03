@@ -104,7 +104,7 @@ class MotionAnalyzer {
       logger.error("Unexpected error during motion analysis: \(error.localizedDescription)")
     }
 
-    logger.debug("Motion analysis completed - processed \(motionData.count) frame pairs")
+    logger.info("Motion analysis completed - processed \(motionData.count) frame pairs")
 
     // Analyze motion patterns
     analyzeMotionPatterns(motionData)
