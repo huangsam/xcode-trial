@@ -90,7 +90,7 @@ class VideoAnalyzer {
     let tracksStatus = asset.statusOfValue(forKey: "tracks", error: &loadError)
 
     guard durationStatus == .loaded && tracksStatus == .loaded else {
-      print("❌ Error loading video: \(loadError?.localizedDescription ?? "Unknown error")")
+      logger.error("❌ Error loading video: \(loadError?.localizedDescription ?? "Unknown error")")
       return
     }
 
@@ -98,7 +98,7 @@ class VideoAnalyzer {
 
     // Get video track info - extract resolution, framerate, and codec details
     guard let track = asset.tracks(withMediaType: .video).first else {
-      print("❌ No video track found")
+      logger.error("❌ No video track found")
       return
     }
 
@@ -110,13 +110,12 @@ class VideoAnalyzer {
 
   /// Extracts basic video metadata and displays information.
   func analyzeBasicInfo() {
-    print("📊 Basic Video Information:")
-    print("  Duration: \(String(format: "%.2f", duration)) seconds")
-    print("  Frame rate: \(frameRate) fps")
-    print("  Dimensions: \(Int(dimensions.width)) x \(Int(dimensions.height))")
-    print("  Total frames: \(totalFrames)")
-    print("  Format: MP4 (AVFoundation)")
-    print()
+    logger.debug("📊 Basic Video Information:")
+    logger.debug("Duration: \(String(format: "%.2f", duration)) seconds")
+    logger.debug("Frame rate: \(frameRate) fps")
+    logger.debug("Dimensions: \(Int(dimensions.width)) x \(Int(dimensions.height))")
+    logger.debug("Total frames: \(totalFrames)")
+    logger.debug("Format: MP4 (AVFoundation)")
 
     // Collect statistics
     statisticsCollector.addStatistic(category: "metadata", key: "duration_seconds", value: duration)
@@ -131,7 +130,7 @@ class VideoAnalyzer {
 
   /// Analyzes scene changes and background transitions.
   func analyzeBackgroundChanges() {
-    print("🔄 Analyzing background changes...")
+    logger.debug("🔄 Analyzing background changes...")
 
     guard let videoTrack = videoTrack else { return }
 
@@ -144,7 +143,7 @@ class VideoAnalyzer {
     reader?.add(trackOutput)
 
     guard reader?.startReading() == true else {
-      print("❌ Failed to start reading")
+      logger.error("❌ Failed to start reading")
       return
     }
 
@@ -173,11 +172,10 @@ class VideoAnalyzer {
 
     reader?.cancelReading()
 
-    print("  ✅ Found \(backgroundChanges.count) background changes")
-    print(
+    logger.debug("✅ Found \(backgroundChanges.count) background changes")
+    logger.debug(
       "  Change rate: \(String(format: "%.2f", Double(backgroundChanges.count) / Double(frameCount) * 100))%"
     )
-    print()
   }
 
   /// Detects and analyzes faces in video frames.
@@ -247,7 +245,7 @@ class VideoAnalyzer {
 
   /// Measures brightness levels throughout the video.
   func analyzeBrightness() {
-    print("💡 Analyzing brightness levels...")
+    logger.debug("💡 Analyzing brightness levels...")
 
     guard let videoTrack = videoTrack else { return }
 
@@ -280,8 +278,7 @@ class VideoAnalyzer {
 
     let avgBrightness =
       brightnessLevels.map { $0.brightness }.reduce(0, +) / Double(brightnessLevels.count)
-    print("  ✅ Average brightness: \(String(format: "%.2f", avgBrightness))")
-    print()
+    logger.debug("✅ Average brightness: \(String(format: "%.2f", avgBrightness))")
 
     // Collect statistics
     statisticsCollector.addStatistic(
@@ -341,7 +338,7 @@ class VideoAnalyzer {
 
   /// Generates representative key frames from the video.
   func generateKeyFrames() {
-    print("📸 Generating key frames...")
+    logger.debug("📸 Generating key frames...")
 
     // Extract key frames at regular intervals
     let keyFrameInterval = duration / 10.0  // 10 key frames total
@@ -353,8 +350,7 @@ class VideoAnalyzer {
       keyFrames.append((timestamp: timestamp, image: frame))
     }
 
-    print("  ✅ Generated \(keyFrames.count) key frames")
-    print()
+    logger.debug("✅ Generated \(keyFrames.count) key frames")
 
     // Collect statistics
     statisticsCollector.addStatistic(

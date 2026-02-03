@@ -5,11 +5,24 @@ import AVFoundation
 import CoreImage
 import CoreML
 import Foundation
+import Logging
 import Vision
 
 /// Command-line entry point for the Video Analysis Tool.
 /// Performs multimodal video analysis and exports structured JSON results.
 /// Usage: swift run xcode-trial <video.mp4>
+
+/// Sets up the logging system with a stdout backend for command-line output.
+func setupLogging() {
+  LoggingSystem.bootstrap { label in
+    var handler = StreamLogHandler.standardOutput(label: label)
+    handler.logLevel = .info
+    return handler
+  }
+}
+
+/// Global logger instance for the video analysis tool.
+let logger = Logging.Logger(label: "com.xcode-trial.video-analysis")
 
 /// Performs comprehensive multimodal video analysis and exports results to JSON.
 ///
@@ -66,26 +79,6 @@ func runFullAnalysis(videoPath: String, arguments: [String]) {
   print("📄 Results exported to: \(exportPath)")
 }
 
-/// Displays information about the video analysis tool's capabilities.
-/// Shows available analysis features without requiring a video file.
-func demonstrateCapabilities() {
-  print("🎯 Video Analysis Tool Capabilities:")
-  print("===================================")
-  print()
-  print("📊 Basic: Video metadata, duration, resolution, codecs")
-  print("🎭 Faces: Detection, landmarks, tracking, speaker ID")
-  print("🎬 Scenes: Boundary detection, cuts/fades, segmentation")
-  print("🎨 Colors: Dominant palettes, histograms, grading changes")
-  print("📸 Frames: Key frame extraction, thumbnails, storyboards")
-  print("⚡ Motion: Optical flow, intensity, camera movement")
-  print("💡 Brightness: Lighting changes, exposure tracking")
-  print("📝 Text: OCR, captions, on-screen text extraction")
-  print("🔈 Audio: Volume tracking, silence detection, patterns")
-  print("📈 Output: JSON export, comprehensive statistics")
-  print()
-  print("🔧 Built with: AVFoundation, Vision, Core Image, Core ML")
-}
-
 let arguments = CommandLine.arguments
 
 if arguments.count > 1 {
@@ -97,6 +90,4 @@ if arguments.count > 1 {
     print("Usage: \(arguments[0]) <video_file_path>")
     exit(1)
   }
-} else {
-  demonstrateCapabilities()
 }

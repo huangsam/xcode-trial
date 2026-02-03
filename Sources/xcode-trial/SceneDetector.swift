@@ -51,7 +51,7 @@ class SceneDetector {
 
   /// Detects scene boundaries and classifies transition types.
   func detectSceneBoundaries() -> [(timestamp: Double, type: String, confidence: Double)] {
-    logger.info("🎬 Performing advanced scene detection...")
+    logger.debug("🎬 Performing advanced scene detection...")
 
     var sceneBoundaries: [(timestamp: Double, type: String, confidence: Double)] = []
     var previousFrameData: [UInt8]?
@@ -109,13 +109,13 @@ class SceneDetector {
       logger.error("❌ Unexpected error during scene detection: \(error.localizedDescription)")
     }
 
-    logger.info("✅ Scene detection completed - found \(sceneBoundaries.count) scene boundaries")
+    logger.debug("✅ Scene detection completed - found \(sceneBoundaries.count) scene boundaries")
 
     let cutCount = sceneBoundaries.filter { $0.type == "hard_cut" }.count
     let fadeCount = sceneBoundaries.filter { $0.type == "fade" }.count
     let dissolveCount = sceneBoundaries.filter { $0.type == "dissolve" }.count
 
-    logger.info("Hard cuts: \(cutCount), Fades: \(fadeCount), Dissolves: \(dissolveCount)")
+    logger.debug("Hard cuts: \(cutCount), Fades: \(fadeCount), Dissolves: \(dissolveCount)")
 
     analyzeSceneLengths(sceneBoundaries)
 
@@ -225,9 +225,9 @@ class SceneDetector {
     let minSceneLength = sceneLengths.min() ?? 0
     let maxSceneLength = sceneLengths.max() ?? 0
 
-    print("  📊 Scene length statistics:")
-    print("    Average: \(String(format: "%.1f", avgSceneLength))s")
-    print("    Shortest: \(String(format: "%.1f", minSceneLength))s")
-    print("    Longest: \(String(format: "%.1f", maxSceneLength))s")
+    logger.debug("📊 Scene length statistics:")
+    logger.debug("  Average: \(String(format: "%.1f", avgSceneLength))s")
+    logger.debug("  Shortest: \(String(format: "%.1f", minSceneLength))s")
+    logger.debug("  Longest: \(String(format: "%.1f", maxSceneLength))s")
   }
 }

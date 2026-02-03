@@ -37,19 +37,19 @@ class AudioAnalyzer {
 
   /// Analyzes audio volume levels and detects silent periods.
   func analyzeAudio() -> [(timestamp: Double, volume: Double, isSilent: Bool)] {
-    print("🔊 Performing audio analysis...")
+    logger.debug("🔊 Performing audio analysis...")
 
     // Get audio tracks
     let audioTracks = videoAnalyzer.asset.tracks(withMediaType: .audio)
     guard !audioTracks.isEmpty else {
-      print("  ⚠️  No audio tracks found")
+      logger.debug("⚠️  No audio tracks found")
       return []
     }
 
     let audioTrack = audioTracks[0]
-    print("  📊 Audio format: \(audioTrack.mediaType.rawValue)")
-    print("  🎵 Sample rate: \(audioTrack.naturalTimeScale) Hz")
-    print("  📏 Channels: \(audioTrack.naturalSize.width)")
+    logger.debug("📊 Audio format: \(audioTrack.mediaType.rawValue)")
+    logger.debug("🎵 Sample rate: \(audioTrack.naturalTimeScale) Hz")
+    logger.debug("📏 Channels: \(audioTrack.naturalSize.width)")
 
     // Create audio reader
     let reader = try? AVAssetReader(asset: videoAnalyzer.asset)
@@ -65,7 +65,7 @@ class AudioAnalyzer {
     reader?.add(trackOutput)
 
     guard reader?.startReading() == true else {
-      print("  ❌ Could not start audio reading")
+      logger.debug("❌ Could not start audio reading")
       return []
     }
 
@@ -129,7 +129,7 @@ class AudioAnalyzer {
 
     reader?.cancelReading()
 
-    print("  ✅ Analyzed audio in \(audioData.count) segments")
+    logger.debug("✅ Analyzed audio in \(audioData.count) segments")
 
     // Analyze audio patterns
     analyzeAudioPatterns(audioData)
@@ -147,9 +147,10 @@ class AudioAnalyzer {
     let silentSegments = audioData.filter { $0.isSilent }.count
     let silencePercentage = Double(silentSegments) / Double(audioData.count) * 100
 
-    print("  🎚️  Audio analysis results:")
-    print("    Average volume: \(String(format: "%.1f", avgVolume))%")
-    print("    Silent segments: \(silentSegments) (\(String(format: "%.1f", silencePercentage))%)")
+    logger.debug("🎚️  Audio analysis results:")
+    logger.debug("  Average volume: \(String(format: "%.1f", avgVolume))%")
+    logger.debug(
+      "  Silent segments: \(silentSegments) (\(String(format: "%.1f", silencePercentage))%)")
 
     // Detect significant volume changes (potential scene changes or speaker transitions)
     var volumeChanges = 0
@@ -160,7 +161,7 @@ class AudioAnalyzer {
     }
 
     if volumeChanges > 0 {
-      print("    Volume changes detected: \(volumeChanges)")
+      logger.debug("  Volume changes detected: \(volumeChanges)")
     }
 
     // Analyze speaking patterns (rough approximation)
@@ -168,7 +169,7 @@ class AudioAnalyzer {
     let speakingPercentage = Double(speakingSegments) / Double(audioData.count) * 100
 
     if speakingPercentage > 10 {
-      print("    Estimated speaking time: \(String(format: "%.1f", speakingPercentage))%")
+      logger.debug("  Estimated speaking time: \(String(format: "%.1f", speakingPercentage))%")
     }
   }
 }

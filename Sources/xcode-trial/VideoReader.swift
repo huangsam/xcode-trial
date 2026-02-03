@@ -1,19 +1,6 @@
 import AVFoundation
 import CoreImage
 import Foundation
-import Logging
-
-/// Sets up the logging system with a stdout backend for command-line output.
-func setupLogging() {
-  LoggingSystem.bootstrap { label in
-    var handler = StreamLogHandler.standardOutput(label: label)
-    handler.logLevel = .info
-    return handler
-  }
-}
-
-/// Global logger instance for the video analysis tool.
-let logger = Logging.Logger(label: "com.xcode-trial.video-analysis")
 
 /// Errors that can occur during video reading operations.
 enum VideoReaderError: Error {

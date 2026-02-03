@@ -50,7 +50,7 @@ class MotionAnalyzer {
   func analyzeMotion() -> [(
     timestamp: Double, intensity: Double, direction: (x: Double, y: Double)?, type: String
   )] {
-    logger.info("⚡ Performing advanced motion analysis...")
+    logger.debug("⚡ Performing advanced motion analysis...")
 
     var motionData:
       [(timestamp: Double, intensity: Double, direction: (x: Double, y: Double)?, type: String)] =
@@ -104,7 +104,7 @@ class MotionAnalyzer {
       logger.error("❌ Unexpected error during motion analysis: \(error.localizedDescription)")
     }
 
-    logger.info("✅ Motion analysis completed - processed \(motionData.count) frame pairs")
+    logger.debug("✅ Motion analysis completed - processed \(motionData.count) frame pairs")
 
     // Analyze motion patterns
     analyzeMotionPatterns(motionData)
@@ -252,12 +252,12 @@ class MotionAnalyzer {
     let avgMotion = motionData.map { $0.intensity }.reduce(0, +) / Double(motionData.count)
     let motionTypes = Dictionary(grouping: motionData) { $0.type }.mapValues { $0.count }
 
-    print("  ⚡ Motion analysis results:")
-    print("    Average motion intensity: \(String(format: "%.3f", avgMotion))")
+    logger.debug("⚡ Motion analysis results:")
+    logger.debug("  Average motion intensity: \(String(format: "%.3f", avgMotion))")
 
     for (type, count) in motionTypes.sorted(by: { $0.value > $1.value }) {
       let percentage = Double(count) / Double(motionData.count) * 100
-      print("    \(type): \(String(format: "%.1f", percentage))%")
+      logger.debug("  \(type): \(String(format: "%.1f", percentage))%")
     }
 
     // Detect motion bursts (sudden increases)
@@ -269,7 +269,7 @@ class MotionAnalyzer {
     }
 
     if motionBursts > 0 {
-      print("    Motion bursts detected: \(motionBursts)")
+      logger.debug("  Motion bursts detected: \(motionBursts)")
     }
 
     // Analyze directional consistency
@@ -281,7 +281,7 @@ class MotionAnalyzer {
         })
       if let direction = avgDirection {
         let angle = atan2(direction.y, direction.x) * 180 / .pi
-        print("    Dominant motion direction: \(String(format: "%.0f", angle))°")
+        logger.debug("  Dominant motion direction: \(String(format: "%.0f", angle))°")
       }
     }
   }
