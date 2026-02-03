@@ -61,7 +61,7 @@ class FaceDetector {
         try requestHandler.perform([faceDetectionRequest])
 
         guard let observations = faceDetectionRequest.results else {
-          logger.warning("⚠️ Face detection failed to return valid observations")
+          logger.warning("Face detection failed to return valid observations")
           return true
         }
 
@@ -79,17 +79,17 @@ class FaceDetector {
         return true  // Continue processing
       }
     } catch VideoReaderError.assetReaderCreationFailed {
-      logger.error("❌ Failed to create asset reader for face detection")
+      logger.error("Failed to create asset reader for face detection")
     } catch VideoReaderError.trackOutputCreationFailed {
-      logger.error("❌ Failed to create track output for face detection")
+      logger.error("Failed to create track output for face detection")
     } catch VideoReaderError.readingFailed(let message) {
-      logger.error("❌ Face detection reading failed: \(message)")
+      logger.error("Face detection reading failed: \(message)")
     } catch VideoReaderError.pixelBufferExtractionFailed {
-      logger.error("❌ Failed to extract pixel buffer during face detection")
+      logger.error("Failed to extract pixel buffer during face detection")
     } catch VideoReaderError.invalidFrameData {
-      logger.error("❌ Invalid frame data encountered during face detection")
+      logger.error("Invalid frame data encountered during face detection")
     } catch {
-      logger.error("❌ Unexpected error during face detection: \(error.localizedDescription)")
+      logger.error("Unexpected error during face detection: \(error.localizedDescription)")
     }
 
     logger.debug("Face analysis completed - detected faces in \(results.count) frames")

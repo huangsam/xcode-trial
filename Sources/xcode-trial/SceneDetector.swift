@@ -96,17 +96,17 @@ class SceneDetector {
         return true  // Continue processing
       }
     } catch VideoReaderError.assetReaderCreationFailed {
-      logger.error("❌ Failed to create asset reader for scene detection")
+      logger.error("Failed to create asset reader for scene detection")
     } catch VideoReaderError.trackOutputCreationFailed {
-      logger.error("❌ Failed to create track output for scene detection")
+      logger.error("Failed to create track output for scene detection")
     } catch VideoReaderError.readingFailed(let message) {
-      logger.error("❌ Scene detection reading failed: \(message)")
+      logger.error("Scene detection reading failed: \(message)")
     } catch VideoReaderError.pixelBufferExtractionFailed {
-      logger.error("❌ Failed to extract pixel buffer during scene detection")
+      logger.error("Failed to extract pixel buffer during scene detection")
     } catch VideoReaderError.invalidFrameData {
-      logger.error("❌ Invalid frame data encountered during scene detection")
+      logger.error("Invalid frame data encountered during scene detection")
     } catch {
-      logger.error("❌ Unexpected error during scene detection: \(error.localizedDescription)")
+      logger.error("Unexpected error during scene detection: \(error.localizedDescription)")
     }
 
     logger.debug("Scene detection completed - found \(sceneBoundaries.count) scene boundaries")

@@ -70,7 +70,7 @@ func runFullAnalysis(videoPath: String, arguments: [String]) {
   do {
     try analyzer.stats.exportToJSON(filePath: exportPath)
   } catch {
-    logger.warning("⚠️  Warning: Could not export JSON results: \(error.localizedDescription)")
+    logger.warning("Warning: Could not export JSON results: \(error.localizedDescription)")
   }
 
   logger.info("Analysis complete!")

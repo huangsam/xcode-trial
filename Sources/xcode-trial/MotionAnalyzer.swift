@@ -91,17 +91,17 @@ class MotionAnalyzer {
         return true  // Continue processing all frames
       }
     } catch VideoReaderError.assetReaderCreationFailed {
-      logger.error("❌ Failed to create asset reader for motion analysis")
+      logger.error("Failed to create asset reader for motion analysis")
     } catch VideoReaderError.trackOutputCreationFailed {
-      logger.error("❌ Failed to create track output for motion analysis")
+      logger.error("Failed to create track output for motion analysis")
     } catch VideoReaderError.readingFailed(let message) {
-      logger.error("❌ Motion analysis reading failed: \(message)")
+      logger.error("Motion analysis reading failed: \(message)")
     } catch VideoReaderError.pixelBufferExtractionFailed {
-      logger.error("❌ Failed to extract pixel buffer during motion analysis")
+      logger.error("Failed to extract pixel buffer during motion analysis")
     } catch VideoReaderError.invalidFrameData {
-      logger.error("❌ Invalid frame data encountered during motion analysis")
+      logger.error("Invalid frame data encountered during motion analysis")
     } catch {
-      logger.error("❌ Unexpected error during motion analysis: \(error.localizedDescription)")
+      logger.error("Unexpected error during motion analysis: \(error.localizedDescription)")
     }
 
     logger.debug("Motion analysis completed - processed \(motionData.count) frame pairs")

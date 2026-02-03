@@ -88,7 +88,7 @@ class VideoAnalyzer {
     let tracksStatus = asset.statusOfValue(forKey: "tracks", error: &loadError)
 
     guard durationStatus == .loaded && tracksStatus == .loaded else {
-      logger.error("❌ Error loading video: \(loadError?.localizedDescription ?? "Unknown error")")
+      logger.error("Error loading video: \(loadError?.localizedDescription ?? "Unknown error")")
       return
     }
 
@@ -96,7 +96,7 @@ class VideoAnalyzer {
 
     // Get video track info - extract resolution, framerate, and codec details
     guard let track = asset.tracks(withMediaType: .video).first else {
-      logger.error("❌ No video track found")
+      logger.error("No video track found")
       return
     }
 
@@ -140,7 +140,7 @@ class VideoAnalyzer {
     reader?.add(trackOutput)
 
     guard reader?.startReading() == true else {
-      logger.error("❌ Failed to start reading")
+      logger.error("Failed to start reading")
       return
     }
 
