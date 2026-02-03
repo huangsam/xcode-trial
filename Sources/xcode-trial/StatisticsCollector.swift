@@ -22,30 +22,6 @@ import Foundation
 /// - JSON serialization with proper formatting
 /// - File system persistence with error handling
 /// - Structured output for ML feature engineering
-/// - Human-readable report generation
-///
-/// Design patterns:
-/// - Builder pattern for incremental result accumulation
-/// - Facade pattern for simplified external interface
-/// - Strategy pattern for different export formats
-///
-/// Performance considerations:
-/// - In-memory storage for fast access during analysis
-/// - Lazy serialization for export operations
-/// - Memory-efficient data structures
-/// - Thread-safe operations for concurrent analysis
-///
-/// Integration points:
-/// - ML pipelines: structured feature extraction
-/// - Data lakes: JSON ingestion and processing
-/// - Analytics systems: queryable result storage
-/// - Monitoring dashboards: real-time metric display
-///
-/// Usage patterns:
-/// - Accumulate results during analysis phases
-/// - Query specific metrics for conditional logic
-/// - Export complete results for persistence
-/// - Generate reports for human consumption
 class StatisticsCollector {
   private var statistics: [String: Any] = [:]
 
