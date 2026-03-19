@@ -2,6 +2,8 @@
 
 A comprehensive Swift-based video analysis tool that performs multimodal analysis on video files, extracting insights about faces, scenes, colors, motion, audio, text, and more. Perfect for content analysis, video classification, and ML feature extraction.
 
+This Swift implementation serves as a reference for Vision framework capabilities and modern iOS/macOS development practices, while an OpenCV/C++ approach would demonstrate cross-platform computer vision fundamentals.
+
 See [AGENTS.md](AGENTS.md) for information about AI agent integration and development workflows.
 
 See [ROLES.md](ROLES.md) for engineering perspectives and data flow architecture.
